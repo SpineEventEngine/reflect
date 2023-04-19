@@ -11,7 +11,7 @@ To use Spine Reflect in your Gradle project:
 
 ```kotlin
 dependencies {
-    testImplementation("io.spine.tools:spine-reflect:${version}")
+    implementation("io.spine.tools:spine-reflect:${version}")
 }
 ```
 

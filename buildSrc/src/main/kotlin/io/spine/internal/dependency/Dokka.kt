@@ -1,5 +1,5 @@
 /*
- * Copyright 2022, TeamDev. All rights reserved.
+ * Copyright 2023, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 package io.spine.internal.dependency
 
 // https://github.com/Kotlin/dokka
-@Suppress("unused")
+@Suppress("unused", "ConstPropertyName")
 object Dokka {
     private const val group = "org.jetbrains.dokka"
 
@@ -35,14 +35,14 @@ object Dokka {
      * When changing the version, also change the version used in the
      * `buildSrc/build.gradle.kts`.
      */
-    const val version = "1.8.10"
+    const val version = "1.9.10"
 
     object GradlePlugin {
         const val id = "org.jetbrains.dokka"
 
         /**
          * The version of this plugin is already specified in `buildSrc/build.gradle.kts`
-         * file. Thus, when applying the plugin in project's build files, only the [id]
+         * file. Thus, when applying the plugin to project's build files, only the [id]
          * should be used.
          */
         const val lib = "${group}:dokka-gradle-plugin:${version}"
@@ -59,7 +59,7 @@ object Dokka {
     }
 
     /**
-     * To generate the documentation as seen from Java perspective use this plugin.
+     * To generate the documentation as seen from the Java perspective, please use this plugin.
      *
      * @see <a href="https://github.com/Kotlin/dokka#output-formats">
      *     Dokka output formats</a>

@@ -33,7 +33,6 @@ import io.spine.internal.gradle.javadoc.JavadocConfig
 import io.spine.internal.gradle.publish.IncrementGuard
 import io.spine.internal.gradle.publish.PublishingRepos
 import io.spine.internal.gradle.publish.spinePublishing
-import io.spine.internal.gradle.report.coverage.JacocoConfig
 import io.spine.internal.gradle.report.license.LicenseReporter
 import io.spine.internal.gradle.report.pom.PomGenerator
 import io.spine.internal.gradle.standardToSpineSdk
@@ -41,16 +40,15 @@ import io.spine.internal.gradle.standardToSpineSdk
 
 buildscript {
     standardSpineSdkRepositories()
-    io.spine.internal.gradle.doForceVersions(configurations)
+    doForceVersions(configurations)
 }
 
 repositories.standardToSpineSdk()
 
 // Apply some plugins to make type-safe extension accessors available in this script file.
 plugins {
-    `kotlin-jvm-module`
+    `jvm-module`
     idea
-    jacoco
     `gradle-doctor`
     `project-report`
 }

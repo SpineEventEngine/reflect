@@ -26,9 +26,10 @@
 
 package io.spine.internal.dependency
 
-// https://www.mojohaus.org/animal-sniffer/animal-sniffer-maven-plugin/
+// https://github.com/Kotlin/kotlinx-kover
 @Suppress("unused", "ConstPropertyName")
-object AnimalSniffer {
-    private const val version = "1.21"
-    const val lib = "org.codehaus.mojo:animal-sniffer-annotations:${version}"
+object Kover {
+    const val version = "0.7.4"
+    const val id = "org.jetbrains.kotlinx.kover"
+    const val classpath = "org.jetbrains.kotlinx:kover-gradle-plugin:$version"
 }

@@ -28,6 +28,8 @@ package io.spine.reflect
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.spine.reflect.given.LoggerCode
+import io.spine.reflect.given.UserCode
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -67,9 +69,11 @@ internal class CallerFinderSpec {
         val library = LoggerCode(skipCount = 2)
         val code = UserCode(library)
         code.invokeUserCode()
-        library.caller shouldNotBe null
-        library.caller!!.className shouldBe UserCode::class.java.name
-        library.caller!!.methodName shouldBe "loggingMethod"
+        library.run {
+            caller shouldNotBe null
+            caller!!.className shouldBe UserCode::class.java.name
+            caller!!.methodName shouldBe "loggingMethod"
+        }
     }
 
     @Test

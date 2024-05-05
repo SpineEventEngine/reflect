@@ -50,7 +50,8 @@ final class StackWalkerStackGetter implements StackGetter {
     StackWalkerStackGetter() {
         // Due to b/241269335, we check in constructor whether this implementation
         // crashes in runtime, and CallerFinder should catch any Throwable caused.
-        StackTraceElement unused = callerOf(StackWalkerStackGetter.class, 0);
+        @SuppressWarnings("unused")
+        var unused = callerOf(StackWalkerStackGetter.class, 0);
     }
 
     @Override

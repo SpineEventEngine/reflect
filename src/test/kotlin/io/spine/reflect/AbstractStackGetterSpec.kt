@@ -28,6 +28,8 @@ package io.spine.reflect
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.spine.reflect.given.LoggerCode
+import io.spine.reflect.given.UserCode
 import org.junit.jupiter.api.Test
 
 /**
@@ -47,9 +49,11 @@ internal abstract class AbstractStackGetterSpec(
         val library = LoggerCode(skipCount = 2, stackGetter)
         val code = UserCode(library)
         code.invokeUserCode()
-        library.caller shouldNotBe null
-        library.caller!!.className shouldBe UserCode::class.java.name
-        library.caller!!.methodName shouldBe "loggingMethod"
+        library.run {
+            caller shouldNotBe null
+            caller!!.className shouldBe UserCode::class.java.name
+            caller!!.methodName shouldBe "loggingMethod"
+        }
     }
 
     @Test
@@ -59,47 +63,5 @@ internal abstract class AbstractStackGetterSpec(
         val code = UserCode(library)
         code.invokeUserCode()
         library.caller shouldBe null
-    }
-}
-
-/**
- * Fake class that emulates some code calling a log method.
- */
-internal class UserCode(private val logger: LoggerCode) {
-
-    fun invokeUserCode() {
-        loggingMethod()
-    }
-
-    private fun loggingMethod() {
-        logger.logMethod()
-    }
-}
-
-/**
- * A fake class that emulates the logging library, which eventually
- * calls the given [StackGetter], if any, or [CallerFinder].
- */
-internal class LoggerCode(
-    private val skipCount: Int,
-    private val stackGetter: StackGetter? = null
-) {
-
-    var caller: StackTraceElement? = null
-
-    fun logMethod() {
-        internalMethodOne()
-    }
-
-    private fun internalMethodOne() {
-        internalMethodTwo()
-    }
-
-    private fun internalMethodTwo() {
-        caller = if (stackGetter != null) {
-            stackGetter.callerOf(LoggerCode::class.java, skipCount)
-        } else {
-            CallerFinder.findCallerOf(LoggerCode::class.java, skipCount)
-        }
     }
 }

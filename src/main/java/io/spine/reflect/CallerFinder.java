@@ -89,7 +89,7 @@ public final class CallerFinder {
      * Returns a synthetic stack trace starting at the immediate caller of the specified target.
      *
      * @param target
-     *         the class who caller the returned stack trace will start at.
+     *         the class who is the caller the returned stack trace will start at.
      * @param maxDepth
      *         the maximum size of the returned stack (pass -1 for the complete stack).
      * @param skip

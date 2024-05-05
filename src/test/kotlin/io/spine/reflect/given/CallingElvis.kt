@@ -33,7 +33,7 @@ object Elvis {
     /**
      * Obtains the caller of this class.
      */
-    fun whosCalling(): Class<*>? {
+    fun whoIsCalling(): Class<*>? {
         val callingClass = findCallerOf(this::class.java, 0)?.let {
             Class.forName(it.className)
         }
@@ -41,12 +41,12 @@ object Elvis {
     }
 
     fun sign(): Class<*>? {
-        return whosCalling()
+        return whoIsCalling()
     }
 }
 
 object AnybodyHome {
     fun call(): Class<*>? {
-        return Elvis.whosCalling()
+        return Elvis.whoIsCalling()
     }
 }

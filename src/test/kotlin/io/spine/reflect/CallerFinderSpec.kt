@@ -87,6 +87,10 @@ internal class CallerFinderSpec {
         library.caller shouldBe null
     }
 
+    /**
+     * This is a test of obtaining the caller from inside a class that is
+     * interested in knowing the caller.
+     */
     @Test
     fun `obtain the caller of a class`() {
         Elvis.sign() shouldBe this::class.java

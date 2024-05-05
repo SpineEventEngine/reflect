@@ -64,7 +64,7 @@ internal interface StackGetter {
      * @throws IllegalArgumentException
      *          if `maxDepth` is 0 or < -1 or `skipFrames` is < 0.
      */
-    fun getStackForCaller(
+    fun stackForCaller(
         target: Class<*>,
         maxDepth: Int,
         skipFrames: Int

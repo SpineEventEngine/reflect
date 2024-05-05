@@ -44,7 +44,7 @@ internal class ThrowableStackGetter : StackGetter {
         return null
     }
 
-    override fun getStackForCaller(
+    override fun stackForCaller(
         target: Class<*>,
         maxDepth: Int,
         skipFrames: Int

@@ -23,38 +23,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package io.spine.reflect;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+package io.spine.reflect
 
 /**
- * A helper class for determining callers of a specified class currently on the stack.
+ * A helper object for determining callers of a specified class currently on the stack.
  *
  * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/CallerFinder.java">
- *         Original Java code of Google Flogger</a>
+ *      Original Java code of Google Flogger</a>
  */
-public final class CallerFinder {
+public object CallerFinder {
 
-    private static final StackGetter STACK_GETTER = createBestStackGetter();
-
-    /** Prevents instantiation of this utility class. */
-    private CallerFinder() {
-    }
+    private val STACK_GETTER = createBestStackGetter()
 
     /**
-     * Returns the first available class implementing the {@link StackGetter} methods.
+     * Returns the first available class implementing the [StackGetter] methods.
      * The implementation returned is dependent on the current Java version.
      */
-    private static StackGetter createBestStackGetter() {
-        try {
-            return new StackWalkerStackGetter();
-        } catch (Throwable ignored) {
+    private fun createBestStackGetter(): StackGetter {
+        return try {
+            StackWalkerStackGetter()
+        } catch (ignored: Throwable) {
             // We may not be able to create `StackWalkerStackGetter` sometimes,
             // for example, on Android. This is not a problem because we have
             // `ThrowableStackGetter` as a fallback option.
-            return new ThrowableStackGetter();
+            ThrowableStackGetter()
         }
     }
 
@@ -62,7 +54,7 @@ public final class CallerFinder {
      * Returns the stack trace element of the immediate caller of the specified class.
      *
      * @param target
-     *         the target class whose callers we are looking for
+     *         the target class whose callers we are looking for.
      * @param skip
      *         the minimum number of calls known to have occurred between the first call to the
      *         target class and the point at which the specified throwable was created.
@@ -71,15 +63,12 @@ public final class CallerFinder {
      *         cannot know whether a tool such as Proguard has merged methods or classes and
      *         reduced the number of intermediate stack frames.
      * @return the stack trace element representing the immediate caller of the specified class, or
-     *         null if no caller was found (due to incorrect target, wrong skip count or
-     *         use of JNI).
+     *         `null` if no caller was found (due to incorrect target, wrong skip count or
+     *          use of JNI).
      */
-    @Nullable
-    public static StackTraceElement findCallerOf(Class<?> target, int skip) {
-        if (skip < 0) {
-            throw skipCountCannotBeNegative(skip);
-        }
-        return STACK_GETTER.callerOf(target, skip + 1);
+    public fun findCallerOf(target: Class<*>?, skip: Int): StackTraceElement? {
+        checkSkipCount(skip)
+        return STACK_GETTER.callerOf(target!!, skip + 1)
     }
 
     /**
@@ -95,17 +84,17 @@ public final class CallerFinder {
      *         the empty array if no caller was found (due to incorrect target, wrong skip count or
      *         use of JNI).
      */
-    public static StackTraceElement[] getStackForCallerOf(Class<?> target, int maxDepth, int skip) {
-        if (maxDepth <= 0 && maxDepth != -1) {
-            throw new IllegalArgumentException("invalid maximum depth: " + maxDepth);
-        }
-        if (skip < 0) {
-            throw skipCountCannotBeNegative(skip);
-        }
-        return STACK_GETTER.getStackForCaller(target, maxDepth, skip + 1);
+    public fun stackForCallerOf(
+        target: Class<*>,
+        maxDepth: Int,
+        skip: Int
+    ): Array<StackTraceElement> {
+        require(!(maxDepth <= 0 && maxDepth != -1)) { "invalid maximum depth: $maxDepth." }
+        checkSkipCount(skip)
+        return STACK_GETTER.stackForCaller(target, maxDepth, skip + 1)
     }
 
-    private static @NonNull IllegalArgumentException skipCountCannotBeNegative(int skip) {
-        return new IllegalArgumentException("skip count cannot be negative: " + skip);
+    private fun checkSkipCount(skip: Int) {
+        require(skip >= 0) { "skip can't be negative: $skip." }
     }
 }

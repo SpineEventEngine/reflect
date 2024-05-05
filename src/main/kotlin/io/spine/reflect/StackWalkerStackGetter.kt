@@ -57,7 +57,7 @@ internal class StackWalkerStackGetter : StackGetter {
         }
     }
 
-    override fun getStackForCaller(
+    override fun stackForCaller(
         target: Class<*>,
         maxDepth: Int,
         skipFrames: Int

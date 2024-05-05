@@ -28,6 +28,8 @@ package io.spine.reflect
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.spine.reflect.given.AnybodyHome
+import io.spine.reflect.given.Elvis
 import io.spine.reflect.given.LoggerCode
 import io.spine.reflect.given.UserCode
 import org.junit.jupiter.api.DisplayName
@@ -83,5 +85,11 @@ internal class CallerFinderSpec {
         val code = UserCode(library)
         code.invokeUserCode()
         library.caller shouldBe null
+    }
+
+    @Test
+    fun `obtain the caller of a class`() {
+        Elvis.sign() shouldBe this::class.java
+        AnybodyHome.call() shouldBe AnybodyHome::class.java
     }
 }

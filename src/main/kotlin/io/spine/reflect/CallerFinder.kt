@@ -33,21 +33,8 @@ package io.spine.reflect
  */
 public object CallerFinder {
 
-    private val STACK_GETTER = createBestStackGetter()
-
-    /**
-     * Returns the first available class implementing the [StackGetter] methods.
-     * The implementation returned is dependent on the current Java version.
-     */
-    private fun createBestStackGetter(): StackGetter {
-        return try {
-            StackWalkerStackGetter()
-        } catch (ignored: Throwable) {
-            // We may not be able to create `StackWalkerStackGetter` sometimes,
-            // for example, on Android. This is not a problem because we have
-            // `ThrowableStackGetter` as a fallback option.
-            ThrowableStackGetter()
-        }
+    private val STACK_GETTER by lazy {
+        createBestStackGetter()
     }
 
     /**
@@ -89,9 +76,24 @@ public object CallerFinder {
         maxDepth: Int,
         skip: Int
     ): Array<StackTraceElement> {
-        require(!(maxDepth <= 0 && maxDepth != -1)) { "invalid maximum depth: $maxDepth." }
+        require((maxDepth > 0 || maxDepth == -1)) { "invalid maximum depth: $maxDepth." }
         checkSkipCount(skip)
         return STACK_GETTER.stackForCaller(target, maxDepth, skip + 1)
+    }
+
+    /**
+     * Returns the first available class implementing the [StackGetter] methods.
+     * The implementation returned is dependent on the current Java version.
+     */
+    private fun createBestStackGetter(): StackGetter {
+        return try {
+            StackWalkerStackGetter()
+        } catch (ignored: Throwable) {
+            // We may not be able to create `StackWalkerStackGetter` sometimes,
+            // for example, on Android. This is not a problem because we have
+            // `ThrowableStackGetter` as a fallback option.
+            ThrowableStackGetter()
+        }
     }
 
     private fun checkSkipCount(skip: Int) {

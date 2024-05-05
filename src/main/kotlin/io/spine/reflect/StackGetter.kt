@@ -23,45 +23,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package io.spine.reflect;
+package io.spine.reflect
 
 /**
  * Interface for finding call site information.
  *
- * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/StackGetter.java">
- *         Original Java code of Google Flogger</a>
+ * @see [
+ * Original Java code of Google Flogger](https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/StackGetter.java)
  */
-interface StackGetter {
-
+internal interface StackGetter {
     /**
-     * Returns the first caller of a method on the {@code target} class that is *not* a member of
-     * {@code target} class, by walking back on the stack, or null if the {@code target} class
-     * cannot be found or is the last element of the stack.
+     * Returns the first caller of a method on the [target] class that is *not* a member of
+     * the `target` class.
+     *
+     * The caller is obtained by walking back on the stack.
      *
      * @param target
-     *         the class to find the caller of
+     *         the class to find the caller of.
      * @param skipFrames
      *         skip this many frames before looking for the caller.
      *         This can be used for optimization.
+     * @return the first caller of the method or `null` if the `target` class
+     *         cannot be found or is the last element of the stack.
      */
-    StackTraceElement callerOf(Class<?> target, int skipFrames);
+    fun callerOf(target: Class<*>, skipFrames: Int): StackTraceElement?
 
     /**
-     * Returns up to {@code maxDepth} frames of the stack starting at the stack frame that
-     * is a caller of a method on {@code target} class but is *not* itself a method
-     * on {@code target} class.
+     * Returns up to `maxDepth` frames of the stack starting at the stack frame that
+     * is a caller of a method on `target` class but is *not* itself a method
+     * on `target` class.
      *
      * @param target
-     *         the class to get the stack from
+     *         the class to get the stack from.
      * @param maxDepth
-     *         the maximum depth of the stack to return. A value of -1 means to return the
-     *         whole stack
+     *         the maximum depth of the stack to return.
+     *         A value of -1 means to return the whole stack.
      * @param skipFrames
      *         skip this many stack frames before looking for the target class.
      *         Used for optimization.
      * @throws IllegalArgumentException
-     *         if {@code maxDepth} is 0 or < -1 or {@code skipFrames} is < 0.
+     *          if `maxDepth` is 0 or < -1 or `skipFrames` is < 0.
      */
-    StackTraceElement[] getStackForCaller(Class<?> target, int maxDepth, int skipFrames);
+    fun getStackForCaller(
+        target: Class<*>,
+        maxDepth: Int,
+        skipFrames: Int
+    ): Array<StackTraceElement>
 }

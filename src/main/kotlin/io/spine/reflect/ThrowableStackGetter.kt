@@ -23,66 +23,68 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package io.spine.reflect;
-
-import javax.annotation.Nullable;
-
-import static io.spine.reflect.Checks.checkMaxDepth;
-import static io.spine.reflect.Checks.checkSkipFrames;
+package io.spine.reflect
 
 /**
- * Default implementation of {@link StackGetter} using {@link Throwable#getStackTrace}.
+ * Default implementation of [StackGetter] using [Throwable.getStackTrace].
  *
  * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/ThrowableStackGetter.java">
- *         Original Java code of Google Flogger</a>
+ *       Original Java code of Google Flogger</a>
  */
-final class ThrowableStackGetter implements StackGetter {
+@Suppress("ThrowingExceptionsWithoutMessageOrCause") // For obtaining current stacktrace.
+internal class ThrowableStackGetter : StackGetter {
 
-    private static final StackTraceElement[] EMPTY_STACK_TRACE = new StackTraceElement[0];
-
-    @Override
-    @Nullable
-    public StackTraceElement callerOf(Class<?> target, int skipFrames) {
-        checkSkipFrames(skipFrames);
-        var stack = new Throwable().getStackTrace();
-        var callerIndex = findCallerIndex(stack, target, skipFrames + 1);
+    override fun callerOf(target: Class<*>, skipFrames: Int): StackTraceElement? {
+        checkSkipFrames(skipFrames)
+        val stack = Throwable().stackTrace
+        val callerIndex = findCallerIndex(stack, target, skipFrames + 1)
         if (callerIndex != -1) {
-            return stack[callerIndex];
+            return stack[callerIndex]
         }
-
-        return null;
+        return null
     }
 
-    @Override
-    public StackTraceElement[] getStackForCaller(Class<?> target, int maxDepth, int skipFrames) {
-        checkMaxDepth(maxDepth);
-        checkSkipFrames(skipFrames);
-        var stack = new Throwable().getStackTrace();
-        var callerIndex = findCallerIndex(stack, target, skipFrames + 1);
+    override fun getStackForCaller(
+        target: Class<*>,
+        maxDepth: Int,
+        skipFrames: Int
+    ): Array<StackTraceElement> {
+        checkMaxDepth(maxDepth)
+        checkSkipFrames(skipFrames)
+        val stack = Throwable().stackTrace
+        val callerIndex = findCallerIndex(stack, target, skipFrames + 1)
         if (callerIndex == -1) {
-            return EMPTY_STACK_TRACE;
+            return EMPTY_STACK_TRACE
         }
-        var elementsToAdd = stack.length - callerIndex;
-        if (maxDepth > 0 && maxDepth < elementsToAdd) {
-            elementsToAdd = maxDepth;
+        var elementsToAdd = stack.size - callerIndex
+        if (maxDepth in 1..<elementsToAdd) {
+            elementsToAdd = maxDepth
         }
-        var stackTrace = new StackTraceElement[elementsToAdd];
-        System.arraycopy(stack, callerIndex, stackTrace, 0, elementsToAdd);
-        return stackTrace;
+        val stackTrace = stack.copyOfRange(callerIndex, elementsToAdd)
+        return stackTrace
     }
 
-    private static int findCallerIndex(StackTraceElement[] stack, Class<?> target, int skipFrames) {
-        var foundCaller = false;
-        var targetClassName = target.getName();
-        for (var frameIndex = skipFrames; frameIndex < stack.length; frameIndex++) {
-            if (stack[frameIndex].getClassName()
-                                 .equals(targetClassName)) {
-                foundCaller = true;
-            } else if (foundCaller) {
-                return frameIndex;
+    companion object {
+
+        private val EMPTY_STACK_TRACE = arrayOf<StackTraceElement>()
+
+        private fun findCallerIndex(
+            stack: Array<StackTraceElement>,
+            target: Class<*>,
+            skipFrames: Int
+        ): Int {
+            var foundCaller = false
+            val targetClassName = target.name
+            for (frameIndex in skipFrames..<stack.size) {
+                if (stack[frameIndex].className
+                    == targetClassName
+                ) {
+                    foundCaller = true
+                } else if (foundCaller) {
+                    return frameIndex
+                }
             }
+            return -1
         }
-        return -1;
     }
 }

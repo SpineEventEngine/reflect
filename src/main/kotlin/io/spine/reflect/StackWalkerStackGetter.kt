@@ -23,70 +23,74 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package io.spine.reflect
 
-package io.spine.reflect;
-
-import java.lang.StackWalker.StackFrame;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-import static io.spine.reflect.Checks.checkMaxDepth;
-import static io.spine.reflect.Checks.checkSkipFrames;
+import java.lang.StackWalker.Option.SHOW_REFLECT_FRAMES
+import java.lang.StackWalker.StackFrame
+import java.util.function.Predicate
+import java.util.stream.Stream
+import kotlin.Long.Companion.MAX_VALUE
+import kotlin.collections.toTypedArray
+import kotlin.streams.toList
 
 /**
- * StackWalker based implementation of the {@link StackGetter} interface.
- *
- * <p>Note, that since this is using Java 9 api, it is being compiled separately from the rest of
- * the source code.
+ * StackWalker based implementation of the [StackGetter] interface.
  *
  * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/StackWalkerStackGetter.java">
- *         Original Java code from Google Flogger</a>
+ *     Original Java code of Google Flogger</a>
  */
-final class StackWalkerStackGetter implements StackGetter {
+internal class StackWalkerStackGetter : StackGetter {
 
-    private static final StackWalker STACK_WALKER =
-            StackWalker.getInstance(StackWalker.Option.SHOW_REFLECT_FRAMES);
-
-    StackWalkerStackGetter() {
+    init {
         // Due to b/241269335, we check in constructor whether this implementation
         // crashes in runtime, and CallerFinder should catch any Throwable caused.
-        @SuppressWarnings("unused")
-        var unused = callerOf(StackWalkerStackGetter.class, 0);
+        @Suppress("UNUSED_VARIABLE")
+        val unused = callerOf(StackWalkerStackGetter::class.java, 0)
     }
 
-    @Override
-    public StackTraceElement callerOf(Class<?> target, int skipFrames) {
-        checkSkipFrames(skipFrames);
-        return STACK_WALKER.walk(
-                s -> filterStackTraceAfterTarget(isTargetClass(target), skipFrames, s)
-                        .findFirst()
-                        .orElse(null));
+    override fun callerOf(target: Class<*>, skipFrames: Int): StackTraceElement? {
+        checkSkipFrames(skipFrames)
+        return STACK_WALKER.walk { stream ->
+            filterStackTraceAfterTarget(isTargetClass(target), skipFrames, stream)
+                .findFirst()
+                .orElse(null)
+        }
     }
 
-    @Override
-    public StackTraceElement[] getStackForCaller(Class<?> target, int maxDepth, int skipFrames) {
-        checkMaxDepth(maxDepth);
-        checkSkipFrames(skipFrames);
-        return STACK_WALKER.walk(
-                s -> filterStackTraceAfterTarget(isTargetClass(target), skipFrames, s)
-                        .limit(maxDepth == -1 ? Long.MAX_VALUE : maxDepth)
-                        .toArray(StackTraceElement[]::new));
+    override fun getStackForCaller(
+        target: Class<*>,
+        maxDepth: Int,
+        skipFrames: Int
+    ): Array<StackTraceElement> {
+        checkMaxDepth(maxDepth)
+        checkSkipFrames(skipFrames)
+        return STACK_WALKER.walk { stream ->
+            filterStackTraceAfterTarget(isTargetClass(target), skipFrames, stream)
+                .limit(if (maxDepth == -1) MAX_VALUE else maxDepth.toLong())
+                .toList()
+                .toTypedArray()
+        }
     }
 
-    private static Predicate<StackFrame> isTargetClass(Class<?> target) {
-        var name = target.getName();
-        return f -> f.getClassName()
-                     .equals(name);
-    }
+    companion object {
 
-    private static Stream<StackTraceElement> filterStackTraceAfterTarget(
-            Predicate<StackFrame> isTargetClass, int skipFrames, Stream<StackFrame> s) {
-        // need to skip + 1 because of the call to the method this method is being called from
-        return s.skip(skipFrames + 1)
-                // skip all classes which don't match the name we are looking for
+        private val STACK_WALKER: StackWalker = StackWalker.getInstance(SHOW_REFLECT_FRAMES)
+
+        private fun filterStackTraceAfterTarget(
+            isTargetClass: Predicate<StackFrame>,
+            skipFrames: Int,
+            s: Stream<StackFrame>
+        ): Stream<StackTraceElement> {
+            // need to skip + 1 because of the call to the method this method is being called from.
+            return s.skip((skipFrames + 1).toLong())
+                // Skip all classes which don't match the name we are looking for.
                 .dropWhile(isTargetClass.negate())
-                // then skip all which matches
+                // Then skip all which matches.
                 .dropWhile(isTargetClass)
-                .map(StackFrame::toStackTraceElement);
+                .map { frame -> frame.toStackTraceElement() }
+        }
     }
 }
+
+private fun isTargetClass(target: Class<*>): Predicate<StackFrame> =
+    Predicate { frame -> (frame.className == target.name) }

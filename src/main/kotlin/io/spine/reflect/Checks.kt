@@ -24,44 +24,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.reflect;
+@file:JvmName("Checks")
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
+package io.spine.reflect
 
-/**
- * Local version of the Guava {@code Preconditions} class for simple, often used checks.
- *
- * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/Checks.java">
- *         Original Java code of Google Flogger</a>
- */
-class Checks {
+internal fun checkMaxDepth(maxDepth: Int) {
+    require(maxDepth == -1 || maxDepth > 0) { "maxDepth must be > 0 or -1" }
+}
 
-    private Checks() {
-    }
-
-    @CanIgnoreReturnValue
-    @SuppressWarnings({
-            "ConstantValue" /* We don't want to make the parameter `value` `@Nullable`. */,
-            "PMD.AvoidThrowingNullPointerException" /* We throw it here by convention. */
-    })
-    static <T> T checkNotNull(T value, String name) {
-        if (value == null) {
-            throw new NullPointerException(name + " must not be null");
-        }
-        return value;
-    }
-
-    private static void checkArgument(boolean condition, String message) {
-        if (!condition) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    static void checkMaxDepth(int maxDepth) {
-        checkArgument(maxDepth == -1 || maxDepth > 0, "maxDepth must be > 0 or -1");
-    }
-
-    static void checkSkipFrames(int skipFrames) {
-        checkArgument(skipFrames >= 0, "skipFrames must be >= 0");
-    }
+internal fun checkSkipFrames(skipFrames: Int) {
+    require(skipFrames >= 0) { "skipFrames must be >= 0" }
 }

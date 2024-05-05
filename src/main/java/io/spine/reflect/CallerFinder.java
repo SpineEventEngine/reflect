@@ -29,13 +29,11 @@ package io.spine.reflect;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import static io.spine.reflect.Checks.checkNotNull;
-
 /**
  * A helper class for determining callers of a specified class currently on the stack.
  *
  * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/CallerFinder.java">
- *         Original Java code from Google Flogger</a>
+ *         Original Java code of Google Flogger</a>
  */
 public final class CallerFinder {
 
@@ -78,7 +76,6 @@ public final class CallerFinder {
      */
     @Nullable
     public static StackTraceElement findCallerOf(Class<?> target, int skip) {
-        checkTarget(target);
         if (skip < 0) {
             throw skipCountCannotBeNegative(skip);
         }
@@ -99,7 +96,6 @@ public final class CallerFinder {
      *         use of JNI).
      */
     public static StackTraceElement[] getStackForCallerOf(Class<?> target, int maxDepth, int skip) {
-        checkTarget(target);
         if (maxDepth <= 0 && maxDepth != -1) {
             throw new IllegalArgumentException("invalid maximum depth: " + maxDepth);
         }
@@ -107,10 +103,6 @@ public final class CallerFinder {
             throw skipCountCannotBeNegative(skip);
         }
         return STACK_GETTER.getStackForCaller(target, maxDepth, skip + 1);
-    }
-
-    private static void checkTarget(Class<?> target) {
-        checkNotNull(target, "target");
     }
 
     private static @NonNull IllegalArgumentException skipCountCannotBeNegative(int skip) {

@@ -96,4 +96,23 @@ internal class CallerFinderSpec {
         Elvis.sign() shouldBe this::class.java
         AnybodyHome.call() shouldBe AnybodyHome::class.java
     }
+
+    /**
+     * Please see [io.spine.reflect.given.LogContext] stub for details.
+     */
+    @Test
+    fun `obtain trimmed call stack for a class`() {
+        // We don't care about the skip count here since we call stub `LogContext` directly.
+        val library = LoggerCode(skipCount = 0)
+        val code = UserCode(library)
+        code.someMethod()
+
+        val stack = library.logContext.callerStack
+        stack shouldNotBe null
+        stack!!
+        // This is the element we want to be the caller.
+        stack[0].className shouldBe UserCode::class.java.name
+        // This means that logging internals are skipped in the stack trace.
+        stack[1].className shouldBe CallerFinderSpec::class.java.name
+    }
 }

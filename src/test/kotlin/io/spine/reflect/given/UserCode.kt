@@ -38,4 +38,12 @@ internal class UserCode(private val logger: LoggerCode) {
     private fun loggingMethod() {
         logger.logMethod()
     }
+
+    /**
+     * Please see [LogContext] stub for details.
+     */
+    fun someMethod() {
+        val logContext = logger.logContext
+        logContext.log("INFO: at `someMethod()`")
+    }
 }

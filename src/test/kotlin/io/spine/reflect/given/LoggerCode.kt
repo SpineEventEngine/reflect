@@ -40,6 +40,8 @@ internal class LoggerCode(
 
     var caller: StackTraceElement? = null
 
+    val logContext: LogContext = OtherChildContext()
+
     fun logMethod() {
         internalMethodOne()
     }

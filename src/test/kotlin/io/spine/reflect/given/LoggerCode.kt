@@ -24,4 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-val versionToPublish: String by extra("2.0.0-SNAPSHOT.184")
+package io.spine.reflect.given
+
+import io.spine.reflect.CallerFinder
+import io.spine.reflect.StackGetter
+
+/**
+ * A fake class that emulates the logging library, which eventually
+ * calls the given [StackGetter], if any, or [CallerFinder].
+ */
+internal class LoggerCode(
+    private val skipCount: Int,
+    private val stackGetter: StackGetter? = null
+) {
+
+    var caller: StackTraceElement? = null
+
+    val logContext: LogContext = OtherChildContext()
+
+    fun logMethod() {
+        internalMethodOne()
+    }
+
+    private fun internalMethodOne() {
+        internalMethodTwo()
+    }
+
+    private fun internalMethodTwo() {
+        caller = if (stackGetter != null) {
+            stackGetter.callerOf(LoggerCode::class.java, skipCount)
+        } else {
+            CallerFinder.findCallerOf(LoggerCode::class.java, skipCount)
+        }
+    }
+}

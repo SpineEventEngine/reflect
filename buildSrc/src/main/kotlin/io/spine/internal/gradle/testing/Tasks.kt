@@ -74,12 +74,8 @@ private const val SLOW_TAG = "slow"
 
 /**
  * Executes JUnit tests filtering out the ones tagged as `slow`.
- *
- * This class is made abstract, since in Gradle 8.x API,
- * `dryRun` property is made `abstract` to be set
- * upon task usage.
  */
-private abstract class FastTest : Test() {
+private open class FastTest : Test() {
     init {
         description = "Executes all JUnit tests but the ones tagged as `slow`."
         group = "Verification"
@@ -92,12 +88,8 @@ private abstract class FastTest : Test() {
 
 /**
  * Executes JUnit tests tagged as `slow`.
- *
- * This class is made abstract, since in Gradle 8.x API,
- * `dryRun` property is made `abstract` to be set
- * upon task usage.
  */
-private abstract class SlowTest : Test() {
+private open class SlowTest : Test() {
     init {
         description = "Executes JUnit tests tagged as `slow`."
         group = "Verification"

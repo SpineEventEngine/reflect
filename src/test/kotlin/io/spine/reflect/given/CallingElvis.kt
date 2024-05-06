@@ -24,4 +24,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-val versionToPublish: String by extra("2.0.0-SNAPSHOT.184")
+package io.spine.reflect.given
+
+import io.spine.reflect.CallerFinder.findCallerOf
+
+object Elvis {
+
+    /**
+     * Obtains the caller of this class.
+     */
+    fun whoIsCalling(): Class<*>? {
+        val callingClass = findCallerOf(this::class.java, 0)?.let {
+            Class.forName(it.className)
+        }
+        return callingClass
+    }
+
+    fun sign(): Class<*>? {
+        return whoIsCalling()
+    }
+}
+
+object AnybodyHome {
+    fun call(): Class<*>? {
+        return Elvis.whoIsCalling()
+    }
+}

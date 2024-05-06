@@ -24,4 +24,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-val versionToPublish: String by extra("2.0.0-SNAPSHOT.184")
+package io.spine.reflect.given
+
+/**
+ * Fake class that emulates some code calling a log method.
+ */
+internal class UserCode(private val logger: LoggerCode) {
+
+    fun invokeUserCode() {
+        loggingMethod()
+    }
+
+    private fun loggingMethod() {
+        logger.logMethod()
+    }
+
+    /**
+     * Please see [LogContext] stub for details.
+     */
+    fun someMethod() {
+        val logContext = logger.logContext
+        logContext.log("INFO: at `someMethod()`")
+    }
+}

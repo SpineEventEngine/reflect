@@ -148,7 +148,9 @@ fun Module.addDependencies() = dependencies {
     compileOnlyApi(JavaX.annotations)
     ErrorProne.annotations.forEach { compileOnlyApi(it) }
 
-    implementation(Spine.Logging.lib)
+    // Logging is not required for `reflect` library.
+    // Adding it causes a cyclic dependency.
+    //implementation(Spine.Logging.lib)
 
     testImplementation(Guava.testLib)
     testImplementation(JUnit.runner)

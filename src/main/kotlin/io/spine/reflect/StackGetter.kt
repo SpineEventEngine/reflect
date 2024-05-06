@@ -28,8 +28,8 @@ package io.spine.reflect
 /**
  * Interface for finding call site information.
  *
- * @see [
- * Original Java code of Google Flogger](https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/StackGetter.java)
+ * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/main/java/com/google/common/flogger/util/StackGetter.java">
+ *      Original Java code of Google Flogger</a>
  */
 internal interface StackGetter {
     /**
@@ -69,4 +69,12 @@ internal interface StackGetter {
         maxDepth: Int,
         skipFrames: Int
     ): Array<StackTraceElement>
+}
+
+internal fun checkMaxDepth(maxDepth: Int) {
+    require(maxDepth == -1 || maxDepth > 0) { "maxDepth must be > 0 or -1" }
+}
+
+internal fun checkSkipFrames(skipFrames: Int) {
+    require(skipFrames >= 0) { "skipFrames must be >= 0" }
 }

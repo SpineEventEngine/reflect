@@ -23,6 +23,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+@file:JvmName("CallerFinder")
+
 package io.spine.reflect
 
 /**
@@ -53,6 +56,7 @@ public object CallerFinder {
      *         `null` if no caller was found (due to incorrect target, wrong skip count or
      *          use of JNI).
      */
+    @JvmStatic
     public fun findCallerOf(target: Class<*>?, skip: Int): StackTraceElement? {
         checkSkipCount(skip)
         return STACK_GETTER.callerOf(target!!, skip + 1)
@@ -71,6 +75,7 @@ public object CallerFinder {
      *         the empty array if no caller was found (due to incorrect target, wrong skip count or
      *         use of JNI).
      */
+    @JvmStatic
     public fun stackForCallerOf(
         target: Class<*>,
         maxDepth: Int,

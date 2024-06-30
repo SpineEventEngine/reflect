@@ -43,6 +43,9 @@ internal class FactorySpec {
     private val topLevelKotlinClass = "given.reflect.KotlinClass"
     private val nestedKotlinClass = "given.reflect.KotlinClass\$NestedClass"
 
+    private val classWithoutRequiredConstructor =
+        "given.reflect.JavaClass\$WithoutRequiredConstructor"
+
     @Test
     fun `create an instance of a top level Java class`() {
         Factory<Any>(classLoader).run {
@@ -64,7 +67,7 @@ internal class FactorySpec {
     @Test
     fun `require binary name of a nested Java class`() {
         Factory<Any>(classLoader).run {
-            assertThrows<Exception> {
+            assertThrows<ClassNotFoundException> {
                 create(nestedJavaClass.replace("\$", "."))
             }
         }
@@ -91,8 +94,17 @@ internal class FactorySpec {
     @Test
     fun `require binary name of a nested Kotlin class`() {
         Factory<Any>(classLoader).run {
-            assertThrows<Exception> {
+            assertThrows<ClassNotFoundException> {
                 create(nestedJavaClass.replace("\$", "."))
+            }
+        }
+    }
+
+    @Test
+    fun `require public no-arg constructor`() {
+        Factory<Any>(classLoader).run {
+            assertThrows<IllegalStateException> {
+                create(classWithoutRequiredConstructor)
             }
         }
     }

@@ -31,11 +31,11 @@ import kotlin.reflect.KVisibility
 import org.checkerframework.checker.signature.qual.FqBinaryName
 
 /**
- * A utility class for creating instances of classes by their fully qualified names.
+ * A utility class for creating instances of classes by their fully qualified binary class names.
  *
  * The class must provide a `public` no-arg constructor. Otherwise, an exception will be thrown.
  *
- * The class is loaded via a `ClassLoader` and an instance is created.
+ * The class is loaded via the [classLoader] passed to the factory on creation.
  *
  * @param T the type of the objects created by this factory.
  * @param classLoader

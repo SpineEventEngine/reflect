@@ -46,4 +46,14 @@ public class JavaClass {
             // Do nothing.
         }
     }
+
+    /**
+     * The class without a public no-arg constructor.
+     */
+    public static class WithoutRequiredConstructor {
+
+        private WithoutRequiredConstructor() {
+            // Do nothing.
+        }
+    }
 }

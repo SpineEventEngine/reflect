@@ -65,7 +65,6 @@ repositories.standardToSpineSdk()
 spinePublishing {
     destinations = with(PublishingRepos) {
         setOf(
-            cloudRepo,
             cloudArtifactRegistry,
             gitHub("reflect")
         )

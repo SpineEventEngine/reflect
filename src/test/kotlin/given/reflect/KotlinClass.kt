@@ -24,19 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.internal.gradle.publish
-
-import io.spine.internal.gradle.Repository
+package given.reflect
 
 /**
- * Repositories to which we may publish.
+ * The stub class used by [io.spine.reflect.FactorySpec] tests.
  */
-object PublishingRepos {
-
-    val cloudArtifactRegistry = CloudArtifactRegistry.repository
+@Suppress("unused") // The class is used by its name.
+class KotlinClass {
 
     /**
-     * Obtains a GitHub repository by the given name.
+     * The Kotlin class nested into another one.
      */
-    fun gitHub(repoName: String): Repository = GitHubPackages.repository(repoName)
+    class NestedClass
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * https://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -24,19 +24,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.internal.gradle.publish
-
-import io.spine.internal.gradle.Repository
+package given.reflect;
 
 /**
- * Repositories to which we may publish.
+ * A stub Java class with public no-arg constructor to be used
+ * by {@link io.spine.reflect.FactorySpec} tests.
  */
-object PublishingRepos {
+@SuppressWarnings("unused") // This class is used by its name.
+public class JavaClass {
 
-    val cloudArtifactRegistry = CloudArtifactRegistry.repository
+    public JavaClass() {
+        // Do nothing.
+    }
 
     /**
-     * Obtains a GitHub repository by the given name.
+     * The class nested into another one.
      */
-    fun gitHub(repoName: String): Repository = GitHubPackages.repository(repoName)
+    public static class NestedClass {
+
+        public NestedClass() {
+            // Do nothing.
+        }
+    }
+
+    /**
+     * The class without a public no-arg constructor.
+     */
+    public static class WithoutRequiredConstructor {
+
+        private WithoutRequiredConstructor() {
+            // Do nothing.
+        }
+    }
 }

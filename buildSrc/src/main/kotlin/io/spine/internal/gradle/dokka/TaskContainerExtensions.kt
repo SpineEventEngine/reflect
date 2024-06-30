@@ -1,11 +1,11 @@
 /*
- * Copyright 2024, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * https://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -24,19 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.internal.gradle.publish
+package io.spine.internal.gradle.dokka
 
-import io.spine.internal.gradle.Repository
+import org.gradle.api.tasks.TaskContainer
+import org.jetbrains.dokka.gradle.DokkaTask
 
 /**
- * Repositories to which we may publish.
+ * Finds the `dokkaHtml` Gradle task.
  */
-object PublishingRepos {
-
-    val cloudArtifactRegistry = CloudArtifactRegistry.repository
-
-    /**
-     * Obtains a GitHub repository by the given name.
-     */
-    fun gitHub(repoName: String): Repository = GitHubPackages.repository(repoName)
-}
+@Suppress("unused")
+fun TaskContainer.dokkaHtmlTask() = this.getByName("dokkaHtml") as DokkaTask

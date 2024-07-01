@@ -37,6 +37,9 @@ internal class FactorySpec {
 
     private val classLoader = this.javaClass.classLoader
 
+    // The names of the classes under the `test/given/` directories in
+    // `java` and `kotlin` source sets.
+
     private val topLevelJavaClass = "given.reflect.JavaClass"
     private val nestedJavaClass = "given.reflect.JavaClass\$NestedClass"
 
@@ -108,4 +111,25 @@ internal class FactorySpec {
             }
         }
     }
+
+    @Test
+    fun `create instances with parameters`() {
+        Factory<WithParameters>(classLoader).run {
+            assertDoesNotThrow {
+                create(
+                    WithParameters::class.qualifiedName!!,
+                    "Foo", null, listOf("1", null, "3")
+                )
+            }
+        }
+    }
 }
+
+/**
+ * The class with public constructor with parameters.
+ */
+data class WithParameters(
+    val str: String,
+    val any: Any?,
+    val list: List<String?>
+)

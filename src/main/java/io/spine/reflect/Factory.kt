@@ -33,8 +33,6 @@ import org.checkerframework.checker.signature.qual.FqBinaryName
 /**
  * A utility class for creating instances of classes by their fully qualified binary class names.
  *
- * The class must provide a `public` no-arg constructor. Otherwise, an exception will be thrown.
- *
  * The class is loaded via the [classLoader] passed to the factory on creation.
  *
  * @param T the type of the objects created by this factory.
@@ -44,29 +42,107 @@ import org.checkerframework.checker.signature.qual.FqBinaryName
 public open class Factory<T : Any>(private val classLoader: ClassLoader) {
 
     /**
-     * Creates an instance of `T`.
+     * Creates an instance of [T].
      *
-     * It is necessary that the class defined by the [className] parameter is of type `T` or
-     * is a subtype of `T`. Otherwise, a casting error occurs.
+     * It is necessary that the class defined by the [className] parameter is
+     * of type [T] or is a subtype of [T]. Otherwise, a casting error occurs.
+     *
+     * The class must provide a `public` no-arg constructor.
+     * Otherwise, an exception will be thrown.
      *
      * @param className
      *         the binary name of the class to instantiate.
      */
     public fun create(className: @FqBinaryName String): T {
-        val cls = classLoader.loadClass(className).kotlin
+        val cls = loadClass<T>(className)
+        return cls.create()
+    }
 
+    /**
+     * Creates an instance of [T].
+     *
+     * It is necessary that the class defined by the [className] parameter is
+     * of type [T] or is a subtype of [T]. Otherwise, a casting error occurs.
+     *
+     * The class must provide a `public` constructor with parameters matching given [args].
+     * Otherwise, an exception will occur.
+     *
+     * @param className
+     *         the binary name of the class to instantiate.
+     * @param args
+     *         the arguments passed to the constructor.
+     */
+    public fun create(className: @FqBinaryName String, vararg args: Any?): T =
+        create(className, args.toList())
+
+    /**
+     * Creates an instance of [T].
+     *
+     * It is necessary that the class defined by the [className] parameter is
+     * of type [T] or is a subtype of [T]. Otherwise, a casting error occurs.
+     *
+     * The class must provide a `public` constructor with parameters matching given [args].
+     * Otherwise, an exception will occur.
+     *
+     * @param className
+     *         the binary name of the class to instantiate.
+     * @param args
+     *         the arguments passed to the constructor.
+     */
+    public fun create(className: @FqBinaryName String, args: Iterable<Any?>): T {
+        val cls = loadClass<T>(className)
+        return cls.create(args)
+    }
+
+    private fun <T: Any> loadClass(className: @FqBinaryName String): KClass<out T> {
+        val cls = classLoader.loadClass(className).kotlin
         @Suppress("UNCHECKED_CAST")
-        val tClass = cls as KClass<T>
-        return tClass.create()
+        return cls as KClass<T>
     }
 }
 
 private fun <T : Any> KClass<T>.create(): T {
     val ctor = constructors.find { it.visibility.isPublic && it.parameters.isEmpty() }
     check(ctor != null) {
-        "The class `${qualifiedName}` should have a public zero-parameter constructor."
+        "The class `$qualifiedName` should have a public zero-parameter constructor."
     }
     return ctor.call()
+}
+
+/**
+ * Creates an instance of the class by locating the constructor matching the given arguments.
+ */
+private fun <T : Any> KClass<T>.create(args: Iterable<Any?>): T {
+    val argTypes = args.map { it?.let { it::class } }
+    val ctor = constructors
+        .filter { it.visibility.isPublic }
+        .find {
+            if (it.parameters.size != argTypes.size) {
+                // The number of parameters does not match that of arguments.
+                return@find false
+            }
+            val types = it.parameters.map { it.type }
+            // Check that the parameter types match arguments.
+            types.zip(args).all { (t, a) ->
+                if (a == null) {
+                    // If the argument value is `null` the parameter type must be nullable.
+                    t.isMarkedNullable
+                } else {
+                    // For non-null argument, the class must recognize the value.
+                    // We assume that the `classifier` is not `null` because we do not expect
+                    // intersection types used with `Factory`.
+                    val cls = t.classifier!! as KClass<*>
+                    cls.isInstance(a)
+                }
+            }
+        }
+    check(ctor != null) {
+        val params = argTypes.map { it?.qualifiedName }.joinToString(", ")
+        "The class `$qualifiedName` should have a `public` constructor" +
+                " with the parameters: `$params.`"
+    }
+    val map = ctor.parameters.zip(args).toMap()
+    return ctor.callBy(map)
 }
 
 /**

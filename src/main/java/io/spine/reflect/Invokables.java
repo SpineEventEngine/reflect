@@ -89,10 +89,9 @@ public final class Invokables {
      *         if the class is abstract, or an exception is thrown in the
      *         parameterless constructor
      * @throws IllegalArgumentException
-     *         if the specified class does not have a parameterless
-     *         constructors. Note that nested classes fall under this case
+     *         if the specified class does not have parameterless constructors.
+     *         Note that nested classes fall under this case
      */
-    @SuppressWarnings("UnstableApiUsage") // `Invokable` from Guava.
     public static <C> C callParameterlessCtor(Class<C> type) {
         checkNotNull(type);
         var ctor = ensureParameterlessCtor(type);

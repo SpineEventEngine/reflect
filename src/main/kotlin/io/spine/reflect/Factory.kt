@@ -136,18 +136,20 @@ private fun <T : Any> KClass<T>.create(args: List<Any?>): T {
     return ctor.callBy(map)
 }
 
+/**
+ * Tells if this function declared in the [declaringClass] matches the given arguments.
+ */
 private fun KFunction<*>.matches(declaringClass: KClass<*>, args: List<Any?>): Boolean {
     if (parameters.size != args.size) {
         // The number of parameters does not match that of arguments.
         return false
     }
     return parameters.zip(args).all { (p, a) ->
-        // For non-null argument, the class must recognize the value.
-        // We assume that the `classifier` is not `null` because we do not expect
-        // intersection types used with `Factory`.
-        val cls = p.type.classifier!! as KClass<*>
-
         if (a != null) {
+            // For non-null argument, the class must recognize the value.
+            // We assume that the `classifier` is not `null` because we do not expect
+            // intersection types used with the `Factory` class.
+            val cls = p.type.classifier!! as KClass<*>
             cls.isInstance(a)
         } else {
             if (declaringClass.isTrulyKotlin) {
@@ -173,5 +175,9 @@ private fun KFunction<*>.matches(declaringClass: KClass<*>, args: List<Any?>): B
 private val KVisibility?.isPublic: Boolean
     get() = this == KVisibility.PUBLIC
 
+/**
+ * Tells if this class originates in the Kotlin code, returning `false` for classes
+ * backed by Java code.
+ */
 private val KClass<*>.isTrulyKotlin: Boolean
     get() = java.getAnnotation(Metadata::class.java) != null

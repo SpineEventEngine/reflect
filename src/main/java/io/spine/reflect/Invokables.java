@@ -89,7 +89,7 @@ public final class Invokables {
      *         if the class is abstract, or an exception is thrown in the
      *         parameterless constructor
      * @throws IllegalArgumentException
-     *         if the specified class does not have parameterless constructors.
+     *         if the specified class does not have a parameterless constructor.
      *         Note that nested classes fall under this case
      */
     public static <C> C callParameterlessCtor(Class<C> type) {
@@ -113,7 +113,7 @@ public final class Invokables {
      * {@link IllegalStateException} is thrown.
      *
      * @throws IllegalStateException
-     *         if the target is not of the type that declares the given method or
+     *         if the target is not of the type that declares the given method, or
      *         if an exception is thrown during the method invocation
      * @return the result of method invocation
      */

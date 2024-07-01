@@ -27,6 +27,7 @@
 package io.spine.reflect
 
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -51,99 +52,102 @@ internal class FactorySpec {
 
     private val javaClassWithParameters = "given.reflect.WithParametersJava"
 
-    @Test
-    fun `create an instance of a top level Java class`() {
-        Factory<Any>(classLoader).run {
+    private fun <T : Any> factory() = Factory<T>(classLoader)
+
+    private fun <T: Any> assertCompletes(action: Factory<T>.() -> T) {
+        factory<T>().run {
             assertDoesNotThrow {
-                create(topLevelJavaClass)
+                action()
             }
         }
     }
 
-    @Test
-    fun `create an in an instance of a nested Java class`() {
-        Factory<Any>(classLoader).run {
-            assertDoesNotThrow {
-                create(nestedJavaClass)
-            }
-        }
-    }
-
-    @Test
-    fun `require binary name of a nested Java class`() {
-        Factory<Any>(classLoader).run {
-            assertThrows<ClassNotFoundException> {
-                create(nestedJavaClass.replace("\$", "."))
-            }
-        }
-    }
-
-    @Test
-    fun `create an instance of a top level Kotlin class`() {
-        Factory<Any>(classLoader).run {
-            assertDoesNotThrow {
-                create(topLevelKotlinClass)
-            }
-        }
-    }
-
-    @Test
-    fun `create an in an instance of a nested Kotlin class`() {
-        Factory<Any>(classLoader).run {
-            assertDoesNotThrow {
-                create(nestedKotlinClass)
-            }
-        }
-    }
-
-    @Test
-    fun `require binary name of a nested Kotlin class`() {
-        Factory<Any>(classLoader).run {
-            assertThrows<ClassNotFoundException> {
-                create(nestedJavaClass.replace("\$", "."))
-            }
-        }
-    }
-
-    @Test
-    fun `require public no-arg constructor`() {
-        Factory<Any>(classLoader).run {
+    private fun <T: Any> assertRejects(action: Factory<T>.() -> Unit) {
+        factory<T>().run {
             assertThrows<IllegalStateException> {
-                create(classWithoutRequiredConstructor)
+                action()
             }
         }
     }
 
-    @Test
-    fun `create instances with parameters`() {
-        Factory<WithParameters>(classLoader).run {
-            assertDoesNotThrow {
-                create(
-                    WithParameters::class.qualifiedName!!,
-                    "Foo", null, listOf("1", null, "3")
-                )
+    private fun <T: Any> assertCouldNotFind(action: Factory<T>.() -> T) {
+        factory<T>().run {
+            assertThrows<ClassNotFoundException> {
+                action()
             }
         }
     }
 
-    @Test
-    fun `create instances with parameters in Java code`() {
-        Factory<Any>(classLoader).run {
-            assertDoesNotThrow {
-                create(
-                    javaClassWithParameters,
-                    "Foo", null, listOf("Jungle", "Guerilla", null, "Banana")
-                )
-            }
+    @Nested
+    inner class `create an instance of` {
+
+        @Test
+        fun `a top level Java class`() = assertCompletes<Any> {
+            create(topLevelJavaClass)
+        }
+
+        @Test
+        fun `a nested Java class`() = assertCompletes<Any> {
+            create(nestedJavaClass)
+        }
+
+        @Test
+        fun `a top level Kotlin class`() = assertCompletes<Any> {
+            create(topLevelKotlinClass)
+        }
+
+        @Test
+        fun `a nested Kotlin class`() = assertCompletes<Any> {
+            create(nestedKotlinClass)
         }
     }
 
     @Test
-    fun `reject arguments with wrong types`() {
-        Factory<Any>(classLoader).run {
-            assertThrows<IllegalStateException> {
-                create(javaClassWithParameters, "1", null, 3)
-            }
+    fun `require binary name of a nested Java class`() = assertCouldNotFind<Any> {
+        create(nestedJavaClass.replace("\$", "."))
+    }
+
+    @Test
+    fun `require binary name of a nested Kotlin class`() = assertCouldNotFind<Any> {
+        create(nestedJavaClass.replace("\$", "."))
+    }
+
+    @Test
+    fun `require public no-arg constructor`() = assertRejects<Any> {
+        create(classWithoutRequiredConstructor)
+    }
+
+    @Nested
+    inner class `create instances with parameters` {
+
+        @Test
+        fun `in Kotlin code`() = assertCompletes<WithParameters> {
+            create(
+                WithParameters::class.qualifiedName!!,
+                "Foo", null, listOf("1", null, "3")
+            )
+        }
+
+        @Test
+        fun `in Java code`() = assertCompletes<Any> {
+            create(
+                javaClassWithParameters,
+                "Foo", null, listOf("Jungle", "Guerilla", null, "Banana")
+            )
+        }
+    }
+
+    @Nested
+    inner class `reject arguments` {
+
+        @Test
+        fun `with wrong types`() = assertRejects<Any> {
+            create(javaClassWithParameters, "1", null, 3)
+        }
+
+        @Test
+        fun `with wrong number`() = assertRejects<Any> {
+            create(javaClassWithParameters, "1", null)
         }
     }
 }

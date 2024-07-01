@@ -49,6 +49,8 @@ internal class FactorySpec {
     private val classWithoutRequiredConstructor =
         "given.reflect.JavaClass\$WithoutRequiredConstructor"
 
+    private val javaClassWithParameters = "given.reflect.WithParametersJava"
+
     @Test
     fun `create an instance of a top level Java class`() {
         Factory<Any>(classLoader).run {
@@ -129,9 +131,18 @@ internal class FactorySpec {
         Factory<Any>(classLoader).run {
             assertDoesNotThrow {
                 create(
-                    "given.reflect.WithParametersJava",
+                    javaClassWithParameters,
                     "Foo", null, listOf("Jungle", "Guerilla", null, "Banana")
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `reject arguments with wrong types`() {
+        Factory<Any>(classLoader).run {
+            assertThrows<IllegalStateException> {
+                create(javaClassWithParameters, "1", null, 3)
             }
         }
     }

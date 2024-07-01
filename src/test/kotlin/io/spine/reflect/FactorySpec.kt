@@ -123,6 +123,18 @@ internal class FactorySpec {
             }
         }
     }
+
+    @Test
+    fun `create instances with parameters in Java code`() {
+        Factory<Any>(classLoader).run {
+            assertDoesNotThrow {
+                create(
+                    "given.reflect.WithParametersJava",
+                    "Foo", null, listOf("Jungle", "Guerilla", null, "Banana")
+                )
+            }
+        }
+    }
 }
 
 /**

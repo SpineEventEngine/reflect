@@ -1,11 +1,11 @@
 /*
- * Copyright 2023, TeamDev. All rights reserved.
+ * Copyright 2024, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -89,10 +89,9 @@ public final class Invokables {
      *         if the class is abstract, or an exception is thrown in the
      *         parameterless constructor
      * @throws IllegalArgumentException
-     *         if the specified class does not have a parameterless
-     *         constructors. Note that nested classes fall under this case
+     *         if the specified class does not have a parameterless constructor.
+     *         Note that nested classes fall under this case.
      */
-    @SuppressWarnings("UnstableApiUsage") // `Invokable` from Guava.
     public static <C> C callParameterlessCtor(Class<C> type) {
         checkNotNull(type);
         var ctor = ensureParameterlessCtor(type);
@@ -108,13 +107,13 @@ public final class Invokables {
     }
 
     /**
-     * Invokes the given no-arg method on the target ignoring the accessibility restrictions.
+     * Invokes the given no-arg method on the target, ignoring the accessibility restrictions.
      *
      * <p>The target must be of the type that declares the given method, otherwise an
      * {@link IllegalStateException} is thrown.
      *
      * @throws IllegalStateException
-     *         if the target is not of the type that declares the given method or
+     *         if the target is not of the type that declares the given method, or
      *         if an exception is thrown during the method invocation
      * @return the result of method invocation
      */
@@ -181,11 +180,11 @@ public final class Invokables {
      * @param <T>
      *         a type of reflection-related object to perform a function on
      * @param <R>
-     *         a type of result of the reflective function
+     *         a result type of the reflective function
      * @return a result of the reflective function
      * @throws IllegalStateException
-     *         if a {@code ReflectiveOperationException} is thrown
-     *         by {@code fn}, or other error occurs during the reflective operation execution
+     *         if a {@code ReflectiveOperationException} is thrown by {@code fn},
+     *         or another error occurs during the reflective operation execution
      */
     /* catching any runtimes does not hurt here. */
     private static <T, @Nullable R>

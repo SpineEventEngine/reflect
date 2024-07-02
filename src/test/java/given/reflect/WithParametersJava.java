@@ -24,12 +24,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
+package given.reflect;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+/**
+ * The Java class with the constructor accepting several parameters.
+ */
+@SuppressWarnings("unused")
+public class WithParametersJava {
+
+    public WithParametersJava(String str, @Nullable Object any, Iterable<String> list) {
+        // Do nothing.
     }
 }
-
-// Do not add prefix `spine-` for this single-module project. It will be added automatically.
-rootProject.name = "reflect"

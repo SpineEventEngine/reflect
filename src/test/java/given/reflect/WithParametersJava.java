@@ -37,5 +37,4 @@ public class WithParametersJava {
     public WithParametersJava(String str, @Nullable Object any, Iterable<String> list) {
         // Do nothing.
     }
-
 }

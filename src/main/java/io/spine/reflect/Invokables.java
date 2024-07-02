@@ -90,7 +90,7 @@ public final class Invokables {
      *         parameterless constructor
      * @throws IllegalArgumentException
      *         if the specified class does not have a parameterless constructor.
-     *         Note that nested classes fall under this case
+     *         Note that nested classes fall under this case.
      */
     public static <C> C callParameterlessCtor(Class<C> type) {
         checkNotNull(type);
@@ -107,7 +107,7 @@ public final class Invokables {
     }
 
     /**
-     * Invokes the given no-arg method on the target ignoring the accessibility restrictions.
+     * Invokes the given no-arg method on the target, ignoring the accessibility restrictions.
      *
      * <p>The target must be of the type that declares the given method, otherwise an
      * {@link IllegalStateException} is thrown.
@@ -180,11 +180,11 @@ public final class Invokables {
      * @param <T>
      *         a type of reflection-related object to perform a function on
      * @param <R>
-     *         a type of result of the reflective function
+     *         a result type of the reflective function
      * @return a result of the reflective function
      * @throws IllegalStateException
-     *         if a {@code ReflectiveOperationException} is thrown
-     *         by {@code fn}, or other error occurs during the reflective operation execution
+     *         if a {@code ReflectiveOperationException} is thrown by {@code fn},
+     *         or another error occurs during the reflective operation execution
      */
     /* catching any runtimes does not hurt here. */
     private static <T, @Nullable R>

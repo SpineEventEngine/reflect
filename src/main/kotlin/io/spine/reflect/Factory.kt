@@ -176,7 +176,7 @@ private val KVisibility?.isPublic: Boolean
     get() = this == KVisibility.PUBLIC
 
 /**
- * Tells if this class originates in the Kotlin code, returning `false` for classes
+ * Tells if this class originates from the Kotlin code, returning `false` for classes
  * backed by Java code.
  */
 private val KClass<*>.isTrulyKotlin: Boolean

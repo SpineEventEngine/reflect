@@ -45,6 +45,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static io.spine.reflect.Types.argumentIn;
 import static io.spine.reflect.Types.isEnumClass;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"SerializableNonStaticInnerClassWithoutSerialVersionUID",
         "SerializableInnerClassWithNonSerializableOuterClass"}) // OK when using TypeToken.
@@ -101,7 +102,7 @@ class TypesTest extends UtilityClassTest<Types> {
         @Test
         @DisplayName("from the inheritance chain")
         void getTypeArgument() {
-            var argument = argumentIn(ListOfMessages.class, Iterable.class, 0);
+            var argument = argumentIn(ListOfMessages.class, 0, Iterable.class);
             assertEquals(argument, Message.class);
         }
 
@@ -109,15 +110,31 @@ class TypesTest extends UtilityClassTest<Types> {
         @DisplayName("assuming generic superclass")
         void assumingGenericSuperclass() {
             var val = new Parametrized<Long, String>() {};
-            assertEquals(Long.class, argumentIn(val.getClass(), Base.class, 0));
-            assertEquals(String.class, argumentIn(val.getClass(), Base.class, 1));
+            assertEquals(Long.class, argumentIn(val.getClass(), 0, Base.class));
+            assertEquals(String.class, argumentIn(val.getClass(), 1, Base.class));
         }
 
         @Test
         @DisplayName("obtain generic argument via superclass")
         void viaSuperclass() {
-            assertEquals(String.class, argumentIn(Leaf.class, Base.class, 0));
-            assertEquals(Float.class, argumentIn(Leaf.class, Base.class, 1));
+            assertEquals(String.class, argumentIn(Leaf.class, 0, Base.class));
+            assertEquals(Float.class, argumentIn(Leaf.class, 1, Base.class));
+        }
+
+        @Test
+        @DisplayName("prohibiting negative argument index")
+        void negativeIndex() {
+            assertThrows(IllegalArgumentException.class, () ->
+                    argumentIn(Leaf.class, -1, Base.class)
+            );
+        }
+
+        @Test
+        @DisplayName("checking that index is within the range of type parameters")
+        void outOfBoundsIndex() {
+            assertThrows(IllegalArgumentException.class, () ->
+                    argumentIn(Leaf.class, 2, Base.class)
+            );
         }
     }
 

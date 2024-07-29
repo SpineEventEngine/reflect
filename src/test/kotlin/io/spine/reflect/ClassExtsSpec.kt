@@ -24,4 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-val versionToPublish: String by extra("2.0.0-SNAPSHOT.188")
+package io.spine.reflect
+
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+
+@DisplayName("`Class` extensions should")
+internal class ClassExtsSpec {
+
+    @Test
+    fun `obtain generic type argument`() {
+        Leaf::class.java.argumentIn<Base<*, *>>(0) shouldBe String::class.java
+        Leaf::class.java.argumentIn<Base<*, *>>(1) shouldBe java.lang.Float::class.java
+    }
+}
+
+@Suppress("unused")
+private open class Base<T, K>
+
+private class Leaf : Base<String, Float>()
+

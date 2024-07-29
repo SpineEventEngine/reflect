@@ -24,4 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-val versionToPublish: String by extra("2.0.0-SNAPSHOT.188")
+package io.spine.reflect
+
+/**
+ * Obtains the class of a generic type argument which is specified in the inheritance chain
+ * of the passed class.
+ *
+ * @receiver the end class for which we find the generic argument.
+ * @param [T] the type of superclass.
+ * @param argNumber the index of the generic parameter in the superclass.
+ * @return the class of the generic type argument
+ */
+public inline fun <reified T : Any> Class<out T>.argumentIn(argNumber: Int): Class<*> =
+    Types.argumentIn(this, argNumber, T::class.java)

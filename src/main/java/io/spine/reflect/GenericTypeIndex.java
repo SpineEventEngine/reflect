@@ -70,7 +70,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public interface GenericTypeIndex<C> {
 
     /**
-     * Obtains a zero-based index of a generic parameter of a type.
+     * Obtains a zero-based index of the generic type parameter.
      */
     int index();
 
@@ -80,7 +80,7 @@ public interface GenericTypeIndex<C> {
      * @param cls
      *         the class to inspect
      * @return the argument class
-     * @implNote Obtain the super class of the passed one by inspecting the class which
+     * @implNote Obtain the superclass of the passed one by inspecting the class which
      *         implements {@code GenericTypeIndex}.
      */
     default Class<?> argumentIn(Class<? extends C> cls) {
@@ -88,8 +88,8 @@ public interface GenericTypeIndex<C> {
         var indexClass = getClass();
         @SuppressWarnings("unchecked") /* The type cast is ensured by the declaration of
             the `GenericTypeIndex` interface. */
-        var superclassOfPassed = (Class<C>) Types.argumentIn(indexClass, GenericTypeIndex.class, 0);
-        var result = Types.argumentIn(cls, superclassOfPassed, index());
+        var superclassOfPassed = (Class<C>) Types.argumentIn(indexClass, 0, GenericTypeIndex.class);
+        var result = Types.argumentIn(cls, index(), superclassOfPassed);
         return result;
     }
 }

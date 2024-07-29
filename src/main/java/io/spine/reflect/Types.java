@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
@@ -162,22 +163,30 @@ public final class Types {
      * Obtains the class of a generic type argument which is specified in the inheritance chain
      * of the passed class.
      *
-     * @param cls
-     *         the end class for which we find the generic argument
-     * @param genericSuperclass
-     *         the superclass of the passed which has generic parameters
-     * @param argNumber
-     *         the index of the generic parameter in the superclass
      * @param <T>
      *         the type of superclass
+     * @param cls
+     *         the end class for which we find the generic argument
+     * @param argNumber
+     *         the index of the generic parameter in the superclass
+     * @param genericSuperclass
+     *         the superclass of the passed which has generic parameters
      * @return the class of the generic type argument
      */
-    static
-    <T> Class<?> argumentIn(Class<? extends T> cls, Class<T> genericSuperclass, int argNumber) {
+    public static
+    <T> Class<?> argumentIn(Class<? extends T> cls, int argNumber, Class<T> genericSuperclass) {
         checkNotNull(cls);
         checkNotNull(genericSuperclass);
         var supertypeToken = TypeToken.of(cls).getSupertype(genericSuperclass);
         var typeArgs = resolveArguments(supertypeToken.getType());
+        checkArgument(
+                argNumber >= 0, "The argument number must be a positive value. Got: %s.", argNumber
+        );
+        checkArgument(
+                argNumber < typeArgs.size(),
+                "The generic supertype `%s` has only %s arguments. Got: %s.",
+                genericSuperclass.getName(), typeArgs.size(), argNumber
+        );
         var argValue = typeArgs.get(argNumber);
         var result = TypeToken.of(argValue).getRawType();
         return result;

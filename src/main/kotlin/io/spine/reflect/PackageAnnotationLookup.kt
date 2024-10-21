@@ -31,7 +31,7 @@ import java.lang.annotation.Repeatable
 import java.lang.annotation.Target
 
 /**
- * Locates an annotation of type [T] for the given package, or
+ * Locates an annotation of type [T] for the [given][getFor] package, or
  * for any of its parental packages.
  *
  * This lookup is similar to [AnnotatedPackages][io.spine.reflect.AnnotatedPackages].
@@ -63,7 +63,7 @@ import java.lang.annotation.Target
  *
  * @param T The type of annotations this lookup searches for.
  */
-internal class PackageAnnotationLookup<T : Annotation>(
+public class PackageAnnotationLookup<T : Annotation>(
 
     /**
      * The class of annotations this lookup will be looking for.
@@ -126,7 +126,7 @@ internal class PackageAnnotationLookup<T : Annotation>(
      * 3. Neither the given package nor any of its parental packages is annotated.
      *   The method returns `null`.
      */
-    fun getFor(pkg: Package): T? {
+    public fun getFor(pkg: Package): T? {
         val packageName = pkg.name
         val isUnknown = knownPackages.contains(packageName).not()
 

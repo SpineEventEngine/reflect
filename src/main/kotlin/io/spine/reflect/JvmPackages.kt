@@ -39,11 +39,11 @@ internal typealias PackageName = String
  * A utility for working with [packages][Package].
  *
  * This class is stateless and its methods could have been made top-level functions.
- * We still have the class to allow substituting traversal of packages in tests.
+ * We still have the class to allow substituting an itraversal of packages in tests.
  *
  * @see PackageAnnotationLookup.jvmPackages
  */
-internal open class JvmPackages {
+public open class JvmPackages {
 
     /**
      * Returns packages that have already been loaded by the caller's
@@ -61,7 +61,7 @@ internal open class JvmPackages {
      * the same package two or more times, this method would return only
      * the first loaded one.
      */
-    open fun alreadyLoaded(): Iterable<Package> = Package.getPackages()
+    public open fun alreadyLoaded(): Iterable<Package> = Package.getPackages()
         .asIterable()
         .distinctBy { it.name }
 
@@ -83,7 +83,7 @@ internal open class JvmPackages {
      * Otherwise, `package-info.java` will not have the corresponding class,
      * as no information is needed to be bypassed to the runtime.
      */
-    open fun tryLoading(name: PackageName): Package? {
+    public open fun tryLoading(name: PackageName): Package? {
         val packageInfoClassName = "$name.package-info"
         val packageInfoClass: Class<*>? =
             try {
@@ -109,7 +109,7 @@ internal open class JvmPackages {
      * Please note, this method just operates upon the given package name.
      * Its result is not guaranteed to match an existent hierarchy of packages.
      */
-    open fun expand(name: PackageName): List<PackageName> {
+    public open fun expand(name: PackageName): List<PackageName> {
         val buffer = StringBuilder(name.length)
         val expanded = mutableListOf<PackageName>()
         name.forEach { symbol ->

@@ -1,11 +1,11 @@
 /*
- * Copyright 2023, TeamDev. All rights reserved.
+ * Copyright 2024, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -31,8 +31,8 @@ import java.lang.annotation.Repeatable
 import java.lang.annotation.Target
 
 /**
- * Locates an annotation of type [T] for the asked package,
- * or for any of its parental packages.
+ * Locates an annotation of type [T] for the given package, or
+ * for any of its parental packages.
  *
  * This lookup is similar to [AnnotatedPackages][io.spine.reflect.AnnotatedPackages].
  *
@@ -42,26 +42,26 @@ import java.lang.annotation.Target
  * and then allows retrieving of an annotation for the asked package.
  *
  * But as more classes are loaded by the classloader, more new packages appear.
- * As a result, data within the collection becomes outdated. An instance doesn't
+ * As a result, data within the collection becomes outdated. An instance does not
  * know about every currently loaded package.
  *
- * This implementation performs searching on demand with caching. It does
- * the actual search for packages that are asked for the first time.
+ * This implementation performs searching on demand with caching.
+ * It does the actual search for packages that are asked for the first time.
  * The search result is remembered, so consequent requests for the previously
- * searched packages don't need an actual search.
+ * searched packages do not need an actual search.
  *
  * ## Caching
  *
  * When the lookup inspects parental packages, they are also all cached.
  * Since we have already fetched the loaded parental packages (or tried
- * to force-load them), there's no reason not to cache them too.
+ * to force-load them), there is no reason not to cache them too.
  *
  * Traversing and caching of parental packages will continue even if we have
  * already found the closest annotated parent. Checking two-three-five more
  * packages is not costly when instances of [Package] are already at hand.
  * Otherwise, it may cause many unnecessary repeated force-loadings.
  *
- * @param T the type of annotations this lookup searches for
+ * @param T The type of annotations this lookup searches for.
  */
 internal class PackageAnnotationLookup<T : Annotation>(
 
@@ -71,7 +71,7 @@ internal class PackageAnnotationLookup<T : Annotation>(
      * There are two requirements for the passed annotation:
      *
      * 1. It should NOT be repeatable. As for now, lookup for repeatable
-     * annotations is not supported.
+     *   annotations is not supported.
      * 2. It should be applicable to packages. Otherwise, lookup is useless.
      */
     private val wantedAnnotation: Class<T>,
@@ -79,14 +79,14 @@ internal class PackageAnnotationLookup<T : Annotation>(
     /**
      * A tool for working with [packages][Package].
      *
-     * The requested interface already provides the default implementation
-     * for all methods. And this class doesn't need more.
+     * The default value of this parameter already provides required functionality, and
+     * this class does not need more.
      *
      * The ability to pass another implementation is preserved for tests.
      * This class is performance-sensitive, so tests should also assert
      * whether it uses cached data whenever it is possible.
      */
-    private val jvmPackages: JvmPackages = object : JvmPackages { }
+    private val jvmPackages: JvmPackages = object : JvmPackages() { }
 ) {
 
     /**
@@ -101,15 +101,15 @@ internal class PackageAnnotationLookup<T : Annotation>(
         val annotations = wantedAnnotation.annotations
         val isRepeatable = annotations.any { it.annotationClass == Repeatable::class }
         require(isRepeatable.not()) {
-            "The passed `${wantedAnnotation.name}` annotation is repeatable. " +
+            "The given `${wantedAnnotation.name}` annotation is repeatable. " +
                     "Lookup for repeatable annotations is not supported."
         }
 
         val target = annotations.firstOrNull { it.annotationClass == Target::class } as Target?
         val isPackageApplicable = target == null || target.value.contains(ElementType.PACKAGE)
         require(isPackageApplicable) {
-            "The passed `${wantedAnnotation.name}` annotation is not applicable to packages. " +
-                    "Searching this annotation on packages is useless."
+            "The given `${wantedAnnotation.name}` annotation is not applicable to packages. " +
+                    "Please provide an annotation with `@Target(ElementType.PACKAGE)`."
         }
     }
 
@@ -120,11 +120,11 @@ internal class PackageAnnotationLookup<T : Annotation>(
      * This method considers the following cases:
      *
      * 1. The given package itself is annotated with [T].
-     * The method returns that annotation.
+     *   The method returns that annotation.
      * 2. The given package is NOT annotated, but one of the parental packages is.
-     * The method returns annotation of the closest annotated parent.
+     *   The method returns annotation of the closest annotated parent.
      * 3. Neither the given package nor any of its parental packages is annotated.
-     * The method returns `null`.
+     *   The method returns `null`.
      */
     fun getFor(pkg: Package): T? {
         val packageName = pkg.name
@@ -154,8 +154,10 @@ internal class PackageAnnotationLookup<T : Annotation>(
      * Take a look on example in docs to [propagateAnnotations] method.
      */
     private fun searchWithinHierarchy(packageName: PackageName): Map<PackageName, T?> {
-        val possibleHierarchy = jvmPackages.expand(packageName) // package + its POSSIBLE parents.
-        val loadedHierarchy = loadedHierarchy(packageName) // package + its LOADED parents.
+        // The package and its POSSIBLE parents.
+        val possibleHierarchy = jvmPackages.expand(packageName)
+        // The package and its LOADED parents.
+        val loadedHierarchy = loadedHierarchy(packageName)
         val withAnnotations = findAnnotations(possibleHierarchy, loadedHierarchy)
         val withPropagation = propagateAnnotations(withAnnotations)
         return withPropagation
@@ -186,16 +188,16 @@ internal class PackageAnnotationLookup<T : Annotation>(
      *
      * A failed loading indicates one of the following:
      *
-     * 1. The package doesn't exist at all.
-     * 2. It doesn't have any runtime-retained annotation.
+     * 1. The package does not exist at all.
+     * 2. It does not have any runtime-retained annotation.
      *
-     * For this method, it doesn't matter why exactly it can't be force-loaded.
+     * For this method, it does not matter why exactly it cannot be force-loaded.
      * Both cases are counted as "the package is not annotated".
      *
      * Please note, this method would stop traversing through [possiblePackages]
      * when it meets an already known package. It means all upcoming packages
      * are also already known. In this case, the returned map will not contain
-     * all packages from [possiblePackages] collection, and it doesn't need to.
+     * all packages from [possiblePackages] collection, and it does not need to.
      */
     private fun findAnnotations(
         possiblePackages: List<PackageName>,

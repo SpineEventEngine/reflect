@@ -130,7 +130,8 @@ internal class PackageAnnotationLookupSpec {
          * the one used by other tests, but is located under `unloaded` package.
          * Anchor classes are also prefixed with “Unloaded” word.
          *
-         * Gradle `test` task has also been configured to skip loading any
+         * Please see `build.gradle.kts` of this module for the configuration of
+         * the `test` task has also been configured to skip loading any
          * members from “unloaded” package hierarchy in advance.
          */
         @Test

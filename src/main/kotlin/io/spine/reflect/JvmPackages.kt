@@ -29,7 +29,7 @@ package io.spine.reflect
 import java.lang.StringBuilder
 
 /**
- * Name of a Java or Kotlin package.
+ * A name of a Java or Kotlin package.
  *
  * For example, `io.spine.reflect`.
  */
@@ -37,8 +37,13 @@ internal typealias PackageName = String
 
 /**
  * A utility for working with [packages][Package].
+ *
+ * This class is stateless and its methods could have been made top-level functions.
+ * We still have the class to allow substituting traversal of packages in tests.
+ *
+ * @see PackageAnnotationLookup.jvmPackages
  */
-internal interface JvmPackages {
+internal open class JvmPackages {
 
     /**
      * Returns packages that have already been loaded by the caller's
@@ -56,7 +61,7 @@ internal interface JvmPackages {
      * the same package two or more times, this method would return only
      * the first loaded one.
      */
-    fun alreadyLoaded(): Iterable<Package> = Package.getPackages()
+    open fun alreadyLoaded(): Iterable<Package> = Package.getPackages()
         .asIterable()
         .distinctBy { it.name }
 
@@ -78,7 +83,7 @@ internal interface JvmPackages {
      * Otherwise, `package-info.java` will not have the corresponding class,
      * as no information is needed to be bypassed to the runtime.
      */
-    fun tryLoading(name: PackageName): Package? {
+    open fun tryLoading(name: PackageName): Package? {
         val packageInfoClassName = "$name.package-info"
         val packageInfoClass: Class<*>? =
             try {
@@ -104,7 +109,7 @@ internal interface JvmPackages {
      * Please note, this method just operates upon the given package name.
      * Its result is not guaranteed to match an existent hierarchy of packages.
      */
-    fun expand(name: PackageName): List<PackageName> {
+    open fun expand(name: PackageName): List<PackageName> {
         val buffer = StringBuilder(name.length)
         val expanded = mutableListOf<PackageName>()
         name.forEach { symbol ->

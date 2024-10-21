@@ -44,4 +44,3 @@ internal class ClassExtsSpec {
 private open class Base<T, K>
 
 private class Leaf : Base<String, Float>()
-

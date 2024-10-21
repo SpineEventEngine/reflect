@@ -40,5 +40,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(TestAnnotationContainer.class)
 public @interface RepeatableTestAnnotation {
-
 }

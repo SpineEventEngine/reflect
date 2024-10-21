@@ -24,14 +24,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.gradle.jvm.toolchain.JavaLanguageVersion
+package io.spine.reflect.given
+
+import io.spine.reflect.JvmPackages
+import io.spine.reflect.PackageName
 
 /**
- * This object provides high-level constants, like the version of JVM, to be used
- * throughout the project.
+ * [JvmPackages] that remembers number of calls to its methods.
  */
-object BuildSettings {
-    private const val JVM_VERSION = 11
-    val javaVersion: JavaLanguageVersion = JavaLanguageVersion.of(JVM_VERSION)
-    const val REMOTE_DEBUG_PORT = 5566
+internal class MemoizingJvmPackages : JvmPackages() {
+
+    private val mutableLoadings = mutableMapOf<PackageName, Int>()
+
+    /**
+     * Returns packages, for which [tryLoading] method
+     * has been called one or more times.
+     */
+    val askedForceLoadings: Map<PackageName, Int> = mutableLoadings
+
+    /**
+     * Returns how many times [alreadyLoaded] packages has been called.
+     */
+    var traversedLoadedTimes = 0
+        private set
+
+    override fun alreadyLoaded(): Iterable<Package> {
+        traversedLoadedTimes++
+        return super.alreadyLoaded()
+    }
+
+    override fun tryLoading(name: PackageName): Package? {
+        mutableLoadings[name] = (mutableLoadings[name] ?: 0) + 1
+        return super.tryLoading(name)
+    }
+
+    /**
+     * Tells whether the given package is loaded.
+     *
+     * This class does not count calls to this method.
+     */
+    fun isLoaded(name: PackageName) =
+        super.alreadyLoaded().any { it.name == name }
 }

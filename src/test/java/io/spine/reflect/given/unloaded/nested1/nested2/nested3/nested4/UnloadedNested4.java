@@ -24,14 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.gradle.jvm.toolchain.JavaLanguageVersion
+package io.spine.reflect.given.unloaded.nested1.nested2.nested3.nested4;
 
-/**
- * This object provides high-level constants, like the version of JVM, to be used
- * throughout the project.
- */
-object BuildSettings {
-    private const val JVM_VERSION = 11
-    val javaVersion: JavaLanguageVersion = JavaLanguageVersion.of(JVM_VERSION)
-    const val REMOTE_DEBUG_PORT = 5566
+public class UnloadedNested4 {
 }

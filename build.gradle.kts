@@ -79,6 +79,24 @@ dependencies {
     testImplementation(Spine.testlib)
 }
 
+tasks {
+    /**
+     * Prevents tasks with the type `Test` from loading any members from
+     * the “unloaded” package hierarchy in advance.
+     *
+     * The test suite `io.spine.reflect.PackageAnnotationLookupSpec` needs
+     * these members to be unloaded from the beginning.
+     * This behavior matches the production runtime, in which
+     * classes (and packages) are loaded as needed.
+     *
+     * JUnit loads test classes in advance to support its features.
+     * For example, test-includes and excludes functionality.
+     */
+    withType<Test>().configureEach {
+        filter.excludeTestsMatching("io.spine.reflect.given.unloaded*")
+    }
+}
+
 // Apply Javadoc configuration here (and not right after the `plugins` block)
 // because the `javadoc` task is added when the `kotlin` block `withJava` is applied.
 JavadocConfig.applyTo(project)

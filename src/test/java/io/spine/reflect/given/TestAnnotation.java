@@ -1,11 +1,11 @@
 /*
- * Copyright 2024, TeamDev. All rights reserved.
+ * Copyright 2023, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * https://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -24,14 +24,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.gradle.jvm.toolchain.JavaLanguageVersion
+package io.spine.reflect.given;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This object provides high-level constants, like the version of JVM, to be used
- * throughout the project.
+ * A valid annotation to be used with {@code PackageAnnotationLookup}.
  */
-object BuildSettings {
-    private const val JVM_VERSION = 11
-    val javaVersion: JavaLanguageVersion = JavaLanguageVersion.of(JVM_VERSION)
-    const val REMOTE_DEBUG_PORT = 5566
+@Target(ElementType.PACKAGE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TestAnnotation {
+    Class<?> anchor();
 }

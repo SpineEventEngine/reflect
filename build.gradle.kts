@@ -26,17 +26,17 @@
 
 @file:Suppress("RemoveRedundantQualifierName") // Cannot use imports in some places.
 
-import io.spine.internal.dependency.Kotlin
-import io.spine.internal.dependency.Spine
-import io.spine.internal.gradle.checkstyle.CheckStyleConfig
-import io.spine.internal.gradle.javadoc.JavadocConfig
-import io.spine.internal.gradle.publish.IncrementGuard
-import io.spine.internal.gradle.publish.PublishingRepos
-import io.spine.internal.gradle.publish.spinePublishing
-import io.spine.internal.gradle.report.license.LicenseReporter
-import io.spine.internal.gradle.report.pom.PomGenerator
-import io.spine.internal.gradle.standardToSpineSdk
-
+import io.spine.dependency.lib.Kotlin
+import io.spine.dependency.local.Logging
+import io.spine.dependency.local.Spine
+import io.spine.gradle.checkstyle.CheckStyleConfig
+import io.spine.gradle.javadoc.JavadocConfig
+import io.spine.gradle.publish.IncrementGuard
+import io.spine.gradle.publish.PublishingRepos
+import io.spine.gradle.publish.spinePublishing
+import io.spine.gradle.report.license.LicenseReporter
+import io.spine.gradle.report.pom.PomGenerator
+import io.spine.gradle.standardToSpineSdk
 
 buildscript {
     standardSpineSdkRepositories()
@@ -77,6 +77,12 @@ spinePublishing {
 dependencies {
     api(Kotlin.reflect)
     testImplementation(Spine.testlib)
+}
+
+configurations.all {
+    resolutionStrategy {
+        force(Logging.lib, Logging.libJvm)
+    }
 }
 
 tasks {

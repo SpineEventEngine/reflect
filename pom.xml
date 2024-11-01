@@ -10,7 +10,7 @@ all modules and does not describe the project structure per-subproject.
  -->
 <groupId>io.spine</groupId>
 <artifactId>reflect</artifactId>
-<version>2.0.0-SNAPSHOT.190</version>
+<version>2.0.0-SNAPSHOT.191</version>
 
 <inceptionYear>2015</inceptionYear>
 
@@ -50,7 +50,7 @@ all modules and does not describe the project structure per-subproject.
   <dependency>
     <groupId>io.spine</groupId>
     <artifactId>spine-logging</artifactId>
-    <version>2.0.0-SNAPSHOT.233</version>
+    <version>2.0.0-SNAPSHOT.240</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
@@ -202,21 +202,6 @@ all modules and does not describe the project structure per-subproject.
   <dependency>
     <groupId>org.jetbrains.dokka</groupId>
     <artifactId>dokka-core</artifactId>
-    <version>1.9.20</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jetbrains.dokka</groupId>
-    <artifactId>gfm-plugin</artifactId>
-    <version>1.9.20</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jetbrains.dokka</groupId>
-    <artifactId>javadoc-plugin</artifactId>
-    <version>1.9.20</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jetbrains.dokka</groupId>
-    <artifactId>jekyll-plugin</artifactId>
     <version>1.9.20</version>
   </dependency>
   <dependency>

@@ -43,7 +43,7 @@ internal class StackWalkerStackGetter : StackGetter {
 
     init {
         // Due to b/241269335, we check in constructor whether this implementation
-        // crashes in runtime, and CallerFinder should catch any Throwable caused.
+        // crashes in runtime, and `CallerFinder` should catch any `Throwable` caused.
         @Suppress("unused")
         val unused = callerOf(StackWalkerStackGetter::class.java, 0)
     }

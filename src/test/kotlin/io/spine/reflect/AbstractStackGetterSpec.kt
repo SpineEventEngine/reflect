@@ -28,6 +28,8 @@ package io.spine.reflect
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.spine.reflect.given.CompanionLibrary
+import io.spine.reflect.given.CompanionUserCode
 import io.spine.reflect.given.LoggerCode
 import io.spine.reflect.given.UserCode
 import org.junit.jupiter.api.Test
@@ -63,5 +65,19 @@ internal abstract class AbstractStackGetterSpec(
         val code = UserCode(library)
         code.invokeUserCode()
         library.caller shouldBe null
+    }
+
+    @Test
+    fun `find caller of companion object`() {
+        // Test that CallerFinder can correctly identify callers of companion objects.
+        // The companion object class name in the stack trace should include "$Companion" suffix.
+        val companionLibrary = CompanionLibrary.Companion
+        val userCode = CompanionUserCode(companionLibrary, stackGetter)
+        
+        userCode.invokeCompanionMethod()
+        
+        companionLibrary.caller shouldNotBe null
+        companionLibrary.caller!!.className shouldBe CompanionUserCode::class.java.name
+        companionLibrary.caller!!.methodName shouldBe "invokeCompanionMethod"
     }
 }

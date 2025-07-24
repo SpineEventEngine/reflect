@@ -29,7 +29,7 @@ package io.spine.reflect.given
 import io.spine.reflect.StackGetter
 
 /**
- * A test library class with a companion object that uses CallerFinder functionality.
+ * A test library class with a companion object that uses [StackGetter] functionality.
  */
 internal class CompanionLibrary {
     
@@ -47,7 +47,10 @@ internal class CompanionLibrary {
 /**
  * A user code class that calls companion object methods.
  */
-internal class CompanionUserCode(private val library: CompanionLibrary.Companion, private val stackGetter: StackGetter) {
+internal class CallingCompanion(
+    private val library: CompanionLibrary.Companion,
+    private val stackGetter: StackGetter
+) {
     
     fun invokeCompanionMethod() {
         library.findCaller(stackGetter)

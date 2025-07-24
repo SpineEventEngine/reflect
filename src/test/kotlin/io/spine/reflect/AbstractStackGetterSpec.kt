@@ -29,7 +29,7 @@ package io.spine.reflect
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.spine.reflect.given.CompanionLibrary
-import io.spine.reflect.given.CompanionUserCode
+import io.spine.reflect.given.CallingCompanion
 import io.spine.reflect.given.LoggerCode
 import io.spine.reflect.given.UserCode
 import org.junit.jupiter.api.Test
@@ -37,6 +37,8 @@ import org.junit.jupiter.api.Test
 /**
  * An abstract base for testing concrete implementations of [StackGetter].
  *
+ * @property stackGetter The [StackGetter] implementation to test.
+ * 
  * @see <a href="https://github.com/google/flogger/blob/cb9e836a897d36a78309ee8badf5cad4e6a2d3d8/api/src/test/java/com/google/common/flogger/util/StackGetterTestUtil.java">
  *     Original Java code of Google Flogger</a>
  */
@@ -67,17 +69,22 @@ internal abstract class AbstractStackGetterSpec(
         library.caller shouldBe null
     }
 
+    /**
+     * Tests that [StackGetter.callerOf] can find the caller of a companion object method.
+     */
     @Test
     fun `find caller of companion object`() {
-        // Test that CallerFinder can correctly identify callers of companion objects.
-        // The companion object class name in the stack trace should include "$Companion" suffix.
         val companionLibrary = CompanionLibrary.Companion
-        val userCode = CompanionUserCode(companionLibrary, stackGetter)
+        val userCode = CallingCompanion(companionLibrary, stackGetter)
         
         userCode.invokeCompanionMethod()
-        
-        companionLibrary.caller shouldNotBe null
-        companionLibrary.caller!!.className shouldBe CompanionUserCode::class.java.name
-        companionLibrary.caller!!.methodName shouldBe "invokeCompanionMethod"
+
+        companionLibrary.run {
+            caller shouldNotBe null
+            caller!!.run {
+                className shouldBe CallingCompanion::class.java.name
+                methodName shouldBe "invokeCompanionMethod"
+            }
+        }
     }
 }

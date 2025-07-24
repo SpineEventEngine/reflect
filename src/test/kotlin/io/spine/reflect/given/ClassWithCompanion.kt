@@ -39,7 +39,6 @@ internal class ClassWithCompanion {
     }
 
     companion object {
-        
         var caller: StackTraceElement? = null
             private set
         

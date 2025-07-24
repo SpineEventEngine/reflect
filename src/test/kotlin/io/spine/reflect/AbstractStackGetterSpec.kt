@@ -28,8 +28,8 @@ package io.spine.reflect
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.spine.reflect.given.CompanionLibrary
-import io.spine.reflect.given.CallingCompanion
+import io.spine.reflect.given.ClassWithCompanion
+import io.spine.reflect.given.CallingTheClassWithCompanion
 import io.spine.reflect.given.LoggerCode
 import io.spine.reflect.given.UserCode
 import org.junit.jupiter.api.Test
@@ -74,17 +74,26 @@ internal abstract class AbstractStackGetterSpec(
      */
     @Test
     fun `find caller of companion object`() {
-        val companionLibrary = CompanionLibrary.Companion
-        val userCode = CallingCompanion(companionLibrary, stackGetter)
+        val companionLibrary = ClassWithCompanion.Companion
+        val userCode = CallingTheClassWithCompanion(companionLibrary, stackGetter)
         
-        userCode.invokeCompanionMethod()
+        userCode.invokeCompanionFun()
 
         companionLibrary.run {
             caller shouldNotBe null
             caller!!.run {
-                className shouldBe CallingCompanion::class.java.name
-                methodName shouldBe "invokeCompanionMethod"
+                className shouldBe CallingTheClassWithCompanion::class.java.name
+                methodName shouldBe "invokeCompanionFun"
             }
+        }
+
+        // Check the caller of anb instance method also works assuming that the
+        // `companion object` is declared in the class.
+        val instanceCaller = userCode.invokeInstanceFun()
+        instanceCaller shouldNotBe null
+        instanceCaller!!.run {
+            className shouldBe CallingTheClassWithCompanion::class.java.name
+            methodName shouldBe "invokeInstanceFun"
         }
     }
 }

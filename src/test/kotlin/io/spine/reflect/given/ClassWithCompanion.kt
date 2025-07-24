@@ -32,28 +32,35 @@ import io.spine.reflect.StackGetter
  * A test library class with a companion object that uses [StackGetter] functionality.
  */
 @Suppress("UtilityClassWithPublicConstructor")
-internal class CompanionLibrary {
-    
+internal class ClassWithCompanion {
+
+    fun findInstanceCaller(stackGetter: StackGetter): StackTraceElement? {
+        return stackGetter.callerOf(ClassWithCompanion::class.java, 0)
+    }
+
     companion object {
         
         var caller: StackTraceElement? = null
             private set
         
         fun findCaller(stackGetter: StackGetter) {
-            caller = stackGetter.callerOf(CompanionLibrary::class.java, 0)
+            caller = stackGetter.callerOf(ClassWithCompanion::class.java, 0)
         }
     }
 }
 
 /**
- * A user code class that calls companion object methods.
+ * A user code class calls companion object and instance functions.
  */
-internal class CallingCompanion(
-    private val library: CompanionLibrary.Companion,
+internal class CallingTheClassWithCompanion(
+    private val viaCompanion: ClassWithCompanion.Companion,
     private val stackGetter: StackGetter
 ) {
-    
-    fun invokeCompanionMethod() {
-        library.findCaller(stackGetter)
+    fun invokeCompanionFun() {
+        viaCompanion.findCaller(stackGetter)
+    }
+
+    fun invokeInstanceFun(): StackTraceElement? {
+        return ClassWithCompanion().findInstanceCaller(stackGetter)
     }
 }

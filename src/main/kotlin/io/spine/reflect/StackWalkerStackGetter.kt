@@ -85,7 +85,7 @@ internal class StackWalkerStackGetter : StackGetter {
             // need to skip + 1 because of the call to the method this method is being called from.
             return s.skip((skipFrames + 1).toLong())
                 // Skip all classes which don't match the name we are looking for.
-                .dropWhile(Predicate { isTargetClass.invoke(it).not() })
+                .dropWhile(Predicate { !isTargetClass(it) })
                 // Then skip all which matches.
                 .dropWhile(isTargetClass)
                 .map { frame -> frame.toStackTraceElement() }

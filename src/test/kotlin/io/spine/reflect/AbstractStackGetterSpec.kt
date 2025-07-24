@@ -87,7 +87,7 @@ internal abstract class AbstractStackGetterSpec(
             }
         }
 
-        // Check the caller of anb instance method also works assuming that the
+        // Check the caller of an instance method also works assuming that the
         // `companion object` is declared in the class.
         val instanceCaller = userCode.invokeInstanceFun()
         instanceCaller shouldNotBe null

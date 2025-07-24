@@ -28,7 +28,6 @@ package io.spine.reflect
 
 import java.lang.StackWalker.Option.SHOW_REFLECT_FRAMES
 import java.lang.StackWalker.StackFrame
-import java.util.function.Predicate
 import java.util.stream.Stream
 import kotlin.Long.Companion.MAX_VALUE
 import kotlin.collections.toTypedArray
@@ -85,7 +84,7 @@ internal class StackWalkerStackGetter : StackGetter {
             // need to skip + 1 because of the call to the method this method is being called from.
             return s.skip((skipFrames + 1).toLong())
                 // Skip all classes which don't match the name we are looking for.
-                .dropWhile(Predicate { !isTargetClass(it) })
+                .dropWhile({ !isTargetClass(it) })
                 // Then skip all which matches.
                 .dropWhile(isTargetClass)
                 .map { frame -> frame.toStackTraceElement() }

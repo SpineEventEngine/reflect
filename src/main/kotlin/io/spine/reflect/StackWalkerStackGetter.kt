@@ -1,5 +1,5 @@
 /*
- * Copyright 2024, TeamDev. All rights reserved.
+ * Copyright 2025, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package io.spine.reflect
 
 import java.lang.StackWalker.Option.SHOW_REFLECT_FRAMES
@@ -44,7 +45,7 @@ internal class StackWalkerStackGetter : StackGetter {
     init {
         // Due to b/241269335, we check in constructor whether this implementation
         // crashes in runtime, and CallerFinder should catch any Throwable caused.
-        @Suppress("UNUSED_VARIABLE")
+        @Suppress("UNUSED_VARIABLE", "unused")
         val unused = callerOf(StackWalkerStackGetter::class.java, 0)
     }
 
@@ -77,14 +78,14 @@ internal class StackWalkerStackGetter : StackGetter {
         private val STACK_WALKER: StackWalker = StackWalker.getInstance(SHOW_REFLECT_FRAMES)
 
         private fun filterStackTraceAfterTarget(
-            isTargetClass: Predicate<StackFrame>,
+            isTargetClass: (StackFrame) -> Boolean,
             skipFrames: Int,
             s: Stream<StackFrame>
         ): Stream<StackTraceElement> {
             // need to skip + 1 because of the call to the method this method is being called from.
             return s.skip((skipFrames + 1).toLong())
                 // Skip all classes which don't match the name we are looking for.
-                .dropWhile(isTargetClass.negate())
+                .dropWhile(Predicate { isTargetClass.invoke(it).not() })
                 // Then skip all which matches.
                 .dropWhile(isTargetClass)
                 .map { frame -> frame.toStackTraceElement() }
@@ -92,5 +93,12 @@ internal class StackWalkerStackGetter : StackGetter {
     }
 }
 
-private fun isTargetClass(target: Class<*>): Predicate<StackFrame> =
-    Predicate { frame -> (frame.className == target.name) }
+private fun isTargetClass(target: Class<*>): (StackFrame) -> Boolean = {
+    isTargetClass(it.className, target.name)
+}
+
+/**
+ * Tells if the given class name matches the target class name or its companion object.
+ */
+internal fun isTargetClass(className: String?, targetClassName: String): Boolean =
+    (className == targetClassName || className == "$targetClassName\$Companion")

@@ -99,5 +99,12 @@ private fun isTargetClass(target: Class<*>): (StackFrame) -> Boolean = {
 /**
  * Tells if the given class name matches the target class name or its companion object.
  */
+/**
+ * Determines whether the given class name matches the target class name or its companion object.
+ *
+ * @param className the name of the class to check. Can be `null`.
+ * @param targetClassName the name of the target class to match against.
+ * @return `true` if the class name matches the target class name or its companion object, `false` otherwise.
+ */
 internal fun isTargetClass(className: String?, targetClassName: String): Boolean =
     (className == targetClassName || className == "$targetClassName\$Companion")

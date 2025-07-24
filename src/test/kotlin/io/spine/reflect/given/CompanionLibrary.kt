@@ -31,6 +31,7 @@ import io.spine.reflect.StackGetter
 /**
  * A test library class with a companion object that uses [StackGetter] functionality.
  */
+@Suppress("UtilityClassWithPublicConstructor")
 internal class CompanionLibrary {
     
     companion object {

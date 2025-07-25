@@ -30,8 +30,6 @@ import java.lang.StackWalker.Option.SHOW_REFLECT_FRAMES
 import java.lang.StackWalker.StackFrame
 import java.util.stream.Stream
 import kotlin.Long.Companion.MAX_VALUE
-import kotlin.collections.toTypedArray
-import kotlin.streams.toList
 
 /**
  * StackWalker based implementation of the [StackGetter] interface.

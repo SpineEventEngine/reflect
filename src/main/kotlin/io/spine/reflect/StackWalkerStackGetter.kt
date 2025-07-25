@@ -112,9 +112,9 @@ private const val COMPANION_SUFFIX = "\$Companion"
  * @return `true` if the `className` matches the `targetClassName` or its companion object,
  *         `false` otherwise.
  */
-internal fun isTargetClass(className: String?, targetClassName: String): Boolean {
+internal fun isTargetClass(className: String?, targetClassName: String): Boolean =
     if (className == null) {
-        return false
+        false
+    } else {
+        (className == targetClassName || className == "$targetClassName$COMPANION_SUFFIX")
     }
-    return (className == targetClassName || className == "$targetClassName$COMPANION_SUFFIX")
-}

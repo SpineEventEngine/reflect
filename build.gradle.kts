@@ -26,17 +26,18 @@
 
 @file:Suppress("RemoveRedundantQualifierName") // Cannot use imports in some places.
 
+import io.spine.dependency.build.JSpecify
 import io.spine.dependency.lib.Kotlin
 import io.spine.dependency.local.Logging
-import io.spine.dependency.local.Spine
+import io.spine.dependency.local.TestLib
 import io.spine.gradle.checkstyle.CheckStyleConfig
 import io.spine.gradle.javadoc.JavadocConfig
 import io.spine.gradle.publish.IncrementGuard
 import io.spine.gradle.publish.PublishingRepos
 import io.spine.gradle.publish.spinePublishing
+import io.spine.gradle.repo.standardToSpineSdk
 import io.spine.gradle.report.license.LicenseReporter
 import io.spine.gradle.report.pom.PomGenerator
-import io.spine.gradle.standardToSpineSdk
 
 buildscript {
     standardSpineSdkRepositories()
@@ -47,6 +48,7 @@ repositories.standardToSpineSdk()
 
 // Apply some plugins to make type-safe extension accessors available in this script file.
 plugins {
+    id("org.jetbrains.dokka")
     `jvm-module`
     idea
     `gradle-doctor`
@@ -76,7 +78,8 @@ spinePublishing {
 
 dependencies {
     api(Kotlin.reflect)
-    testImplementation(Spine.testlib)
+    api(JSpecify.annotations)
+    testImplementation(TestLib.lib)
 }
 
 configurations.all {
@@ -108,3 +111,9 @@ tasks {
 JavadocConfig.applyTo(project)
 LicenseReporter.mergeAllReports(project)
 PomGenerator.applyTo(project)
+
+dependencies {
+    productionModules.forEach {
+        dokka(it)
+    }
+}

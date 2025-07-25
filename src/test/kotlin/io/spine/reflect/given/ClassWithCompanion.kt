@@ -39,11 +39,10 @@ internal class ClassWithCompanion {
     }
 
     companion object {
-        var caller: StackTraceElement? = null
-            private set
+        private val caller = AtomicReference<StackTraceElement?>()
         
         fun findCaller(stackGetter: StackGetter) {
-            caller = stackGetter.callerOf(ClassWithCompanion::class.java, 0)
+            caller.set(stackGetter.callerOf(ClassWithCompanion::class.java, 0))
         }
     }
 }

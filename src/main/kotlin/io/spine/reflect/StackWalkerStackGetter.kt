@@ -107,6 +107,8 @@ private const val COMPANION_SUFFIX = "\$Companion"
  *
  * @param className The name of the class to check. Can be `null`.
  *        Typically, this is the name of a class obtained from a stack frame or reflection.
+ *        It may be `null` if the stack frame does not contain a valid class name or if reflection
+ *        fails to retrieve the class name due to certain runtime conditions.
  * @param targetClassName The name of the target class to match against.
  *        This is the fully qualified name of the class being searched for.
  * @return `true` if the `className` matches the `targetClassName` or its companion object,

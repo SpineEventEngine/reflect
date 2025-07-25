@@ -26,7 +26,7 @@
 
 package given.reflect;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The Java class with the constructor accepting several parameters.

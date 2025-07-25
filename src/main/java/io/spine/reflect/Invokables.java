@@ -28,7 +28,7 @@ package io.spine.reflect;
 
 import com.google.common.reflect.Invokable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -59,7 +59,7 @@ public final class Invokables {
      *
      * <p>The accessibility parameter of the input method, i.e. {@code method.isAccessible()}, is
      * preserved by this method. However, the attributes may be changes in a non-synchronized
-     * manner, i.e. the {@code asHandle(..)} is not designed to operate concurrently.
+     * manner, i.e., the {@code asHandle(..)} is not designed to operate concurrently.
      */
     public static MethodHandle asHandle(Method method) {
         checkNotNull(method);
@@ -71,7 +71,7 @@ public final class Invokables {
                         "Unable to obtain method handle for `%s`." +
                                 " The method's accessibility was probably changed concurrently.",
                         method));
-        return result;
+        return checkNotNull(result);
     }
 
     /**
@@ -187,7 +187,7 @@ public final class Invokables {
      *         or another error occurs during the reflective operation execution
      */
     /* catching any runtimes does not hurt here. */
-    private static <T, @Nullable R>
+    private static <T, R extends @Nullable Object>
     R invokePreservingAccessibility(T reflectiveObject,
                                     Function<T, Invokable<?, ?>> makeInvokable,
                                     ReflectiveFunction<T, R> fn,
@@ -214,7 +214,7 @@ public final class Invokables {
      * @param <R>
      *         function output type
      */
-    private interface ReflectiveFunction<T, R> {
+    private interface ReflectiveFunction<T, R extends @Nullable Object> {
 
         R apply(T t) throws ReflectiveOperationException;
     }

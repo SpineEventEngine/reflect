@@ -31,7 +31,7 @@ import com.google.common.truth.BooleanSubject;
 import io.spine.reflect.given.ConstructorsTestEnv;
 import io.spine.reflect.given.MethodsTestEnv.ClassWithPrivateMethod;
 import io.spine.testing.UtilityClassTest;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

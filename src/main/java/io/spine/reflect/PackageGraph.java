@@ -286,6 +286,7 @@ public final class PackageGraph implements Graph<PackageInfo> {
          * </ol>
          */
         @Override
+        @SuppressWarnings("PMD.SimplifyBooleanReturns")
         public boolean test(Package aPackage) {
             var packageName = aPackage.getName();
 

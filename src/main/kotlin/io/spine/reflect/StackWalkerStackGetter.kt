@@ -40,7 +40,7 @@ import kotlin.Long.Companion.MAX_VALUE
 internal class StackWalkerStackGetter : StackGetter {
 
     init {
-        // Due to b/241269335, we check in constructor whether this implementation
+        // Due to b/241269335, we check in the constructor whether this implementation
         // crashes in runtime, and `CallerFinder` should catch any `Throwable` caused.
         @Suppress("UNUSED_VARIABLE", "unused")
         val unused = callerOf(StackWalkerStackGetter::class.java, 0)

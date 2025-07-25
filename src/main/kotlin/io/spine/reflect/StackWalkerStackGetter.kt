@@ -73,7 +73,6 @@ internal class StackWalkerStackGetter : StackGetter {
     }
 
     companion object {
-
         private val STACK_WALKER: StackWalker = StackWalker.getInstance(SHOW_REFLECT_FRAMES)
 
         private fun filterStackTraceAfterTarget(
@@ -96,6 +95,10 @@ private fun isTargetClass(target: Class<*>): (StackFrame) -> Boolean = {
     isTargetClass(it.className, target.name)
 }
 
+/**
+ * A suffix used to identify companion objects in Kotlin in a fully-qualified class name.
+ */
+private const val COMPANION_SUFFIX = "\$Companion"
 
 /**
  * Determines whether the given class name matches the target class name or its companion object.
@@ -104,10 +107,10 @@ private fun isTargetClass(target: Class<*>): (StackFrame) -> Boolean = {
  * corresponds to the companion object of the target class. In Kotlin, companion objects are
  * represented with a `$Companion` suffix in their class name.
  *
- * @param className the name of the class to check. Can be `null`. Typically, this is the name
- *                  of a class obtained from a stack frame or reflection.
- * @param targetClassName the name of the target class to match against. This is the fully
- *                        qualified name of the class being searched for.
+ * @param className The name of the class to check. Can be `null`.
+ *        Typically, this is the name of a class obtained from a stack frame or reflection.
+ * @param targetClassName The name of the target class to match against.
+ *        This is the fully qualified name of the class being searched for.
  * @return `true` if the `className` matches the `targetClassName` or its companion object,
  *         `false` otherwise.
  */

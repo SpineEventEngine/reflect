@@ -1,5 +1,5 @@
 /*
- * Copyright 2024, TeamDev. All rights reserved.
+ * Copyright 2025, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ internal object PomFormatting {
      * Writes the specified lines using the specified [destination], dividing them
      * by platform-specific line separator.
      *
-     * The written lines are also padded with platform's line separator from both sides
+     * The written lines are also padded with the platform's line separator from both sides.
      */
     internal fun writeBlocks(destination: StringWriter, vararg lines: String) {
         lines.iterator().forEach {

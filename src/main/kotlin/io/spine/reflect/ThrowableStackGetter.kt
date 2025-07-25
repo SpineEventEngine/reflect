@@ -76,9 +76,8 @@ internal class ThrowableStackGetter : StackGetter {
             var foundCaller = false
             val targetClassName = target.name
             for (frameIndex in skipFrames..<stack.size) {
-                if (stack[frameIndex].className
-                    == targetClassName
-                ) {
+                val className = stack[frameIndex].className
+                if (isTargetClass(className, targetClassName)) {
                     foundCaller = true
                 } else if (foundCaller) {
                     return frameIndex

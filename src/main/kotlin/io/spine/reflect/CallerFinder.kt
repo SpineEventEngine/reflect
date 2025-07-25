@@ -36,44 +36,39 @@ package io.spine.reflect
  */
 public object CallerFinder {
 
-    private val STACK_GETTER by lazy {
+    private val stackGetter by lazy {
         createBestStackGetter()
     }
 
     /**
      * Returns the stack trace element of the immediate caller of the specified class.
      *
-     * @param target
-     *         the target class whose callers we are looking for.
-     * @param skip
-     *         the minimum number of calls known to have occurred between the first call to the
-     *         target class and the point at which the specified throwable was created.
-     *         If in doubt, specify zero here to avoid accidentally skipping past the caller.
-     *         This is particularly important for code which might be used in Android, since you
-     *         cannot know whether a tool such as Proguard has merged methods or classes and
-     *         reduced the number of intermediate stack frames.
+     * @param target The target class whose callers we are looking for.
+     * @param skip The minimum number of calls known to have occurred between the first call to the
+     *        target class and the point at which the specified throwable was created.
+     *        If in doubt, specify zero here to avoid accidentally skipping past the caller.
+     *        This is particularly important for code which might be used in Android, since you
+     *        cannot know whether a tool such as Proguard has merged methods or classes and
+     *        reduced the number of intermediate stack frames.
      * @return the stack trace element representing the immediate caller of the specified class, or
-     *         `null` if no caller was found (due to incorrect target, wrong skip count or
-     *          use of JNI).
+     *        `null` if no caller was found (due to incorrect target, wrong skip count or
+     *        use of JNI).
      */
     @JvmStatic
     public fun findCallerOf(target: Class<*>?, skip: Int): StackTraceElement? {
         checkSkipCount(skip)
-        return STACK_GETTER.callerOf(target!!, skip + 1)
+        return stackGetter.callerOf(target!!, skip + 1)
     }
 
     /**
      * Returns a synthetic stack trace starting at the immediate caller of the specified target.
      *
-     * @param target
-     *         the class who is the caller the returned stack trace will start at.
-     * @param maxDepth
-     *         the maximum size of the returned stack (pass -1 for the complete stack).
-     * @param skip
-     *         the minimum number of stack frames to skip before looking for callers.
+     * @param target The class who is the caller the returned stack trace will start at.
+     * @param maxDepth The maximum size of the returned stack (pass -1 for the complete stack).
+     * @param skip The minimum number of stack frames to skip before looking for callers.
      * @return a synthetic stack trace starting at the immediate caller of the specified target, or
-     *         the empty array if no caller was found (due to incorrect target, wrong skip count or
-     *         use of JNI).
+     *        the empty array if no caller was found (due to incorrect target, wrong skip count or
+     *        use of JNI).
      */
     @JvmStatic
     public fun stackForCallerOf(
@@ -83,7 +78,7 @@ public object CallerFinder {
     ): Array<StackTraceElement> {
         require((maxDepth > 0 || maxDepth == -1)) { "invalid maximum depth: $maxDepth." }
         checkSkipCount(skip)
-        return STACK_GETTER.stackForCaller(target, maxDepth, skip + 1)
+        return stackGetter.stackForCaller(target, maxDepth, skip + 1)
     }
 
     /**
@@ -93,7 +88,7 @@ public object CallerFinder {
     private fun createBestStackGetter(): StackGetter {
         return try {
             StackWalkerStackGetter()
-        } catch (ignored: Throwable) {
+        } catch (_: Throwable) {
             // We may not be able to create `StackWalkerStackGetter` sometimes,
             // for example, on Android. This is not a problem because we have
             // `ThrowableStackGetter` as a fallback option.
@@ -101,7 +96,6 @@ public object CallerFinder {
         }
     }
 
-    private fun checkSkipCount(skip: Int) {
+    private fun checkSkipCount(skip: Int) =
         require(skip >= 0) { "skip can't be negative: $skip." }
-    }
 }

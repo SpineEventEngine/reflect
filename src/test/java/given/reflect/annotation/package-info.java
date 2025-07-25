@@ -28,9 +28,9 @@
  * Provides a test environment annotation for {@link io.spine.reflect.PackageInfoTest}.
  */
 @CheckReturnValue
-@ParametersAreNonnullByDefault
+@NullMarked
 package given.reflect.annotation;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;

@@ -100,9 +100,16 @@ private fun isTargetClass(target: Class<*>): (StackFrame) -> Boolean = {
 /**
  * Determines whether the given class name matches the target class name or its companion object.
  *
- * @param className the name of the class to check. Can be `null`.
- * @param targetClassName the name of the target class to match against.
- * @return `true` if the class name matches the target class name or its companion object, `false` otherwise.
+ * This function checks if the provided `className` matches the `targetClassName` directly or
+ * corresponds to the companion object of the target class. In Kotlin, companion objects are
+ * represented with a `$Companion` suffix in their class name.
+ *
+ * @param className the name of the class to check. Can be `null`. Typically, this is the name
+ *                  of a class obtained from a stack frame or reflection.
+ * @param targetClassName the name of the target class to match against. This is the fully
+ *                        qualified name of the class being searched for.
+ * @return `true` if the `className` matches the `targetClassName` or its companion object,
+ *         `false` otherwise.
  */
 internal fun isTargetClass(className: String?, targetClassName: String): Boolean =
     (className == targetClassName || className == "$targetClassName\$Companion")

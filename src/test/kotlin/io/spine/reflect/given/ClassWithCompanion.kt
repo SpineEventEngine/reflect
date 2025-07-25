@@ -27,6 +27,8 @@
 package io.spine.reflect.given
 
 import io.spine.reflect.StackGetter
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
  * A test library class with a companion object that uses [StackGetter] functionality.
@@ -38,11 +40,14 @@ internal class ClassWithCompanion {
         return stackGetter.callerOf(ClassWithCompanion::class.java, 0)
     }
 
+    @OptIn(ExperimentalAtomicApi::class)
     companion object {
-        private val caller = AtomicReference<StackTraceElement?>()
+
+        @OptIn(ExperimentalAtomicApi::class)
+        val caller = AtomicReference<StackTraceElement?>(null)
         
         fun findCaller(stackGetter: StackGetter) {
-            caller.set(stackGetter.callerOf(ClassWithCompanion::class.java, 0))
+            caller.store(stackGetter.callerOf(ClassWithCompanion::class.java, 0))
         }
     }
 }

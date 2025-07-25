@@ -32,6 +32,7 @@ import io.spine.reflect.given.ClassWithCompanion
 import io.spine.reflect.given.CallingTheClassWithCompanion
 import io.spine.reflect.given.LoggerCode
 import io.spine.reflect.given.UserCode
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import org.junit.jupiter.api.Test
 
 /**
@@ -73,6 +74,7 @@ internal abstract class AbstractStackGetterSpec(
      * Tests that [StackGetter.callerOf] can find the caller of a companion object method.
      */
     @Test
+    @OptIn(ExperimentalAtomicApi::class)
     fun `find caller of companion object`() {
         val companionLibrary = ClassWithCompanion.Companion
         val userCode = CallingTheClassWithCompanion(companionLibrary, stackGetter)
@@ -80,8 +82,8 @@ internal abstract class AbstractStackGetterSpec(
         userCode.invokeCompanionFun()
 
         companionLibrary.run {
-            caller shouldNotBe null
-            caller!!.run {
+            caller.load() shouldNotBe null
+            caller.load()!!.run {
                 className shouldBe CallingTheClassWithCompanion::class.java.name
                 methodName shouldBe "invokeCompanionFun"
             }

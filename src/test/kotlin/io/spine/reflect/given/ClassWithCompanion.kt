@@ -43,7 +43,6 @@ internal class ClassWithCompanion {
     @OptIn(ExperimentalAtomicApi::class)
     companion object {
 
-        @OptIn(ExperimentalAtomicApi::class)
         val caller = AtomicReference<StackTraceElement?>(null)
         
         fun findCaller(stackGetter: StackGetter) {

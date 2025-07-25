@@ -112,4 +112,4 @@ private fun isTargetClass(target: Class<*>): (StackFrame) -> Boolean = {
  *         `false` otherwise.
  */
 internal fun isTargetClass(className: String?, targetClassName: String): Boolean =
-    (className == targetClassName || className == "$targetClassName\$Companion")
+    (className == targetClassName || className == "$targetClassName$COMPANION_SUFFIX")

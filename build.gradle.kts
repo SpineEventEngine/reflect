@@ -73,8 +73,6 @@ configurations.all {
         force(
             Logging.lib,
             Logging.libJvm,
-            // Requested at an older version by `TestLib.lib`.
-            // Drop once `TestLib` is built against Coroutines 1.11.
             Coroutines.bom,
         )
     }

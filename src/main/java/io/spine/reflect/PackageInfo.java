@@ -180,13 +180,8 @@ public final class PackageInfo implements Comparable<PackageInfo> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof PackageInfo node)) {
-            return false;
-        }
-        return Objects.equals(value, node.value);
+        return this == o
+                || (o instanceof PackageInfo node && Objects.equals(value, node.value));
     }
 
     @Override

@@ -74,6 +74,7 @@ configurations.all {
             Logging.lib,
             Logging.libJvm,
             // Requested at an older version by `TestLib.lib`.
+            // Drop once `TestLib` is built against Coroutines 1.11.
             Coroutines.bom,
         )
     }
@@ -92,9 +93,10 @@ tasks {
      * JUnit loads test classes in advance to support its features.
      * For example, test-includes and excludes functionality.
      *
-     * The class files are excluded from the candidates for test discovery.
-     * A test filter (`filter.excludeTestsMatching`) is not enough: it still lets
-     * the discovery load an excluded class, only to skip running it.
+     * The class files of that hierarchy are excluded by Gradle's `Test.exclude`
+     * file pattern, which applies before JUnit discovery. A test filter
+     * (`filter.excludeTestsMatching`) is not enough: it still lets test discovery
+     * load an excluded class, only to skip running it.
      */
     withType<Test>().configureEach {
         exclude("io/spine/reflect/given/unloaded/**")

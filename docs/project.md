@@ -18,18 +18,19 @@ runtime — `testlib` is a test-only dependency.
 - A single Gradle module with sources in both Java and Kotlin, all in the
   `io.spine.reflect` package.
 - Java has no true package nesting, so the library derives it from package names.
-  `PackageGraph` exposes it as a Guava `Graph`. Independently of it, the
-  annotation lookups resolve parental packages by name: `AnnotatedPackages` scans
-  the packages already loaded, while `PackageAnnotationLookup` force-loads a
-  parental package through its `package-info` class when needed. The tests of
-  the latter rely on the fixtures under `io.spine.reflect.given.unloaded` staying
-  unloaded until a test touches them, so `build.gradle.kts` keeps that hierarchy
-  out of test discovery.
+  `PackageGraph` exposes it as a Guava `Graph`. Independently of `PackageGraph`,
+  the annotation lookups resolve parental packages by name: `AnnotatedPackages`
+  scans the packages already loaded, while `PackageAnnotationLookup` force-loads
+  a parental package through its `package-info` class when needed.
+- The tests of `PackageAnnotationLookup` rely on the fixtures under
+  `io.spine.reflect.given.unloaded` staying unloaded until a test touches them,
+  so `build.gradle.kts` keeps that hierarchy out of test discovery.
 - The stack-inspection code (`CallerFinder` and the `StackGetter`
   implementations) is adapted from Google Flogger.
 - Being a low-level dependency, the library keeps its public surface small and
-  stable. It declares only Kotlin reflection and JSpecify annotations itself;
-  Guava and Protobuf come with the shared `jvm-module` convention.
+  stable. Of its runtime dependencies, only Kotlin reflection is specific to this
+  repository; JSpecify annotations, Guava, and Protobuf come with the shared
+  `jvm-module` convention.
 
-Read [`.agents/guidelines/jvm-project.md`](.agents/guidelines/jvm-project.md) for the
+Read [`.agents/guidelines/jvm-project.md`](../.agents/guidelines/jvm-project.md) for the
 build stack, coding style, tests, and versioning.

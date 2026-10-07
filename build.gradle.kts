@@ -12,15 +12,10 @@
  * and limitations under the License.
  */
 
-@file:Suppress("RemoveRedundantQualifierName") // Cannot use imports in some places.
-
-import io.spine.dependency.build.JSpecify
 import io.spine.dependency.kotlinx.Coroutines
 import io.spine.dependency.lib.Kotlin
 import io.spine.dependency.local.Logging
 import io.spine.dependency.local.TestLib
-import io.spine.gradle.checkstyle.CheckStyleConfig
-import io.spine.gradle.javadoc.JavadocConfig
 import io.spine.gradle.publish.IncrementGuard
 import io.spine.gradle.publish.PublishingRepos
 import io.spine.gradle.publish.spinePublishing
@@ -37,21 +32,15 @@ repositories.standardToSpineSdk()
 
 // Apply some plugins to make type-safe extension accessors available in this script file.
 plugins {
-    id("org.jetbrains.dokka")
     `jvm-module`
     idea
     `gradle-doctor`
-    `project-report`
 }
-LicenseReporter.generateReportIn(project)
-CheckStyleConfig.applyTo(project)
 
 apply(from = "$rootDir/version.gradle.kts")
 group = "io.spine"
 version = rootProject.extra["versionToPublish"]!!
 apply<IncrementGuard>()
-
-repositories.standardToSpineSdk()
 
 spinePublishing {
     destinations = with(PublishingRepos) {
@@ -64,7 +53,6 @@ spinePublishing {
 
 dependencies {
     api(Kotlin.reflect)
-    api(JSpecify.annotations)
     testImplementation(TestLib.lib)
 }
 
@@ -101,14 +89,5 @@ tasks {
     }
 }
 
-// Apply Javadoc configuration here (and not right after the `plugins` block)
-// because the `javadoc` task is added when the `kotlin` block `withJava` is applied.
-JavadocConfig.applyTo(project)
 LicenseReporter.mergeAllReports(project)
 PomGenerator.applyTo(project)
-
-dependencies {
-    productionModules.forEach {
-        dokka(it)
-    }
-}

@@ -127,6 +127,15 @@ class PackageGraphTest {
         }
 
         @Test
+        @DisplayName("providing a `Network` view")
+        void asNetwork() {
+            var network = graph.asNetwork();
+            assertEquals(graph.nodes(), network.nodes());
+            assertEquals(graph.edges(), network.edges());
+            assertTrue(network.isDirected());
+        }
+
+        @Test
         @DisplayName("having natural node order")
         void naturalOrder() {
             assertEquals(ElementOrder.<PackageInfo>natural(), graph.nodeOrder());

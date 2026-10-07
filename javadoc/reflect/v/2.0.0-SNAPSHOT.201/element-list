@@ -1,0 +1,4 @@
+$dokka.format:javadoc-v1
+$dokka.linkExtension:html
+$dokka.location:io.spine.reflect/PackageGraph.Filter///PointingToDeclaration/io/spine/reflect/PackageGraph.Filter.html
+io.spine.reflect

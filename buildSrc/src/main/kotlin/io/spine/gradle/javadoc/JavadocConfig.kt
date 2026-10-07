@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.javadoc
@@ -48,7 +36,7 @@ fun TaskContainer.javadocTask() = this.getByName("javadoc") as Javadoc
 /**
  * Javadoc processing settings.
  *
- * This type is named with `Config` suffix to avoid its confusion with the standard `Javadoc` type.
+ * This type is named with the `Config` suffix to avoid its confusion with the standard `Javadoc` type.
  */
 @Suppress("unused")
 object JavadocConfig {
@@ -90,21 +78,21 @@ object JavadocConfig {
      * This fixes navigation to classes through the search results.
      *
      * The issue appeared after migration to Java 11. When Javadoc is generated for a project
-     * that does not declare Java 9 modules, search results contain broken links with appended
+     * that does not declare Java 9 modules, search results contain broken links with an appended
      * `undefined` prefix to the URL. This `undefined` was meant to be a name of a Java 9 module.
      *
      * See: [Issue #334](https://github.com/SpineEventEngine/config/issues/334)
      */
     private fun discardJavaModulesInLinks(javadoc: Javadoc) {
 
-        // We ask `Javadoc` task to modify "search.js" and override a method, responsible for
+        // We ask the `Javadoc` task to modify "search.js" and override a method, responsible for
         // the formation of URL prefixes. We can't specify the option "--no-module-directories",
         // because it leads to discarding of all module prefixes in generated links.
         // That means links to the types from the standard library would not work,
         // as they are declared within modules since Java 9.
 
         val discardModulePrefix = """
-            
+
             getURLPrefix = function(ui) {
                 return "";
             };
@@ -125,7 +113,7 @@ object JavadocConfig {
     }
 
     /**
-     * Configures `javadoc` tool to avoid numerous warnings for missing `@param` tags.
+     * Configures the `javadoc` tool to avoid numerous warnings for missing `@param` tags.
      *
      * As suggested by Stephen Colebourne:
      *  [https://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html]

@@ -1,30 +1,21 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 import io.spine.dependency.boms.BomsPlugin
+import io.spine.dependency.isDokka
+import io.spine.dependency.lib.Jackson
+import io.spine.dependency.lib.Kotlin
 import io.spine.dependency.local.Reflect
 import io.spine.dependency.local.TestLib
 import io.spine.dependency.test.JUnit
@@ -36,7 +27,6 @@ import io.spine.gradle.kotlin.setFreeCompilerArgs
 import io.spine.gradle.publish.IncrementGuard
 import io.spine.gradle.report.license.LicenseReporter
 import io.spine.gradle.testing.configureLogging
-import io.spine.gradle.testing.registerTestTasks
 
 /**
  * Configures this [Project] as a Kotlin Multiplatform module.
@@ -71,7 +61,6 @@ val about = ""
 plugins {
     kotlin("multiplatform")
     id("detekt-code-analysis")
-    id("io.kotest.multiplatform")
     id("org.jetbrains.kotlinx.kover")
     `project-report`
 }
@@ -84,8 +73,16 @@ fun Project.forceConfigurations() {
     with(configurations) {
         forceVersions()
         all {
+            if (isDokka) {
+                return@all
+            }
             resolutionStrategy {
+                val cfg = this@all
+                val rs = this@resolutionStrategy
+                Jackson.forceArtifacts(project, cfg, rs)
+                Jackson.DataFormat.forceArtifacts(project, cfg, rs)
                 force(
+                    Kotlin.bom,
                     Reflect.lib
                 )
             }
@@ -98,34 +95,35 @@ fun Project.forceConfigurations() {
  *
  * Please note, this extension DOES NOT configure Kotlin for JVM.
  * It configures KMP, in which Kotlin for JVM is only one of
- * possible targets.
+ * the possible targets.
  */
-@Suppress("UNUSED_VARIABLE") // Avoid warnings for source set vars.
 kotlin {
     // Enables explicit API mode for any Kotlin sources within the module.
     explicitApi()
+
+    compilerOptions {
+        setFreeCompilerArgs()
+    }
 
     // Enables and configures JVM target.
     jvm {
         compilerOptions {
             jvmTarget.set(BuildSettings.jvmTarget)
-            setFreeCompilerArgs()
         }
     }
 
     // Dependencies are specified per-target.
     // Please note, common sources are implicitly available in all targets.
     sourceSets {
-        val commonTest by getting {
+        getByName("commonTest") {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 implementation(Kotest.assertions)
                 implementation(Kotest.frameworkEngine)
-                implementation(Kotest.datatest)
             }
         }
-        val jvmTest by getting {
+        getByName("jvmTest") {
             dependencies {
                 implementation(dependencies.enforcedPlatform(JUnit.bom))
                 implementation(TestLib.lib)
@@ -141,7 +139,6 @@ java {
     targetCompatibility = BuildSettings.javaVersionCompat
 }
 
-
 /**
  * Performs the standard task's configuration.
  *
@@ -152,17 +149,28 @@ java {
  *
  * Also, Kotlin and Java share the same test executor (JUnit), so tests
  * configuration is for both.
+ *
+ * The `jvmTest` task mirrors the setup made by `module-testing` for
+ * the `test` task of a `jvm-module` (`module-testing` itself cannot be
+ * applied here because it brings `java-library`, which conflicts with
+ * the Kotlin Multiplatform plugin). Unlike `module-testing`, no engine
+ * filter is imposed: `jvmTest` dependencies include the Kotest runner,
+ * which is a JUnit Platform engine of its own.
  */
 tasks {
     withType<JavaCompile>().configureEach {
         configureJavac()
+    }
+    named<Test>("jvmTest") {
+        useJUnitPlatform()
+        configureLogging()
     }
 }
 
 /**
  * Overrides the default location of Kotlin sources.
  *
- * The default configuration of Detekt assumes presence of Kotlin sources
+ * The default configuration of Detekt assumes the presence of Kotlin sources
  * in `src/main/kotlin`, which is not the case for KMP.
  */
 detekt {

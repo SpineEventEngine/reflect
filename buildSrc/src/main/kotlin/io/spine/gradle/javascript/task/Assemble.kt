@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.javascript.task
@@ -29,6 +17,7 @@ package io.spine.gradle.javascript.task
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.protobuf.gradle.GenerateProtoTask
+import io.spine.gradle.SpineTaskGroup
 import io.spine.gradle.TaskName
 import io.spine.gradle.base.assemble
 import io.spine.gradle.javascript.plugin.generateJsonParsers
@@ -105,7 +94,7 @@ private fun JsTasks.assembleJs() =
     register(assembleJsName) {
 
         description = "Assembles JavaScript sources into consumable artifacts."
-        group = JsTasks.Group.assemble
+        group = SpineTaskGroup.name
 
         dependsOn(
             installNodePackages,
@@ -130,7 +119,7 @@ private fun JsTasks.compileProtoToJs() =
     register(compileProtoToJsName) {
 
         description = "Compiles Protobuf messages into JavaScript."
-        group = JsTasks.Group.assemble
+        group = SpineTaskGroup.name
 
         withType<GenerateProtoTask>()
             .forEach { dependsOn(it) }
@@ -141,7 +130,7 @@ private val installNodePackagesName = TaskName.of("installNodePackages")
 /**
  * Locates `installNodePackages` task in this [TaskContainer].
  *
- * The task installs Node packages which this module depends on using `npm install` command.
+ * The task installs Node packages that this module depends on using `npm install` command.
  *
  * The `npm install` command is executed with the vulnerability check disabled since
  * it cannot fail the task execution despite on vulnerabilities found.
@@ -158,7 +147,7 @@ private fun JsTasks.installNodePackages() =
     register(installNodePackagesName) {
 
         description = "Installs module`s Node dependencies."
-        group = JsTasks.Group.assemble
+        group = SpineTaskGroup.name
 
         inputs.file(packageJson)
         outputs.dir(nodeModules)
@@ -185,7 +174,7 @@ private fun JsTasks.updatePackageVersion() =
     register(updatePackageVersionName) {
 
         description = "Sets a module's version in `package.json`."
-        group = JsTasks.Group.assemble
+        group = SpineTaskGroup.name
 
         doLast {
             val objectNode = ObjectMapper()

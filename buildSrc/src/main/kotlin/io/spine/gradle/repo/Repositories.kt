@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 @file:Suppress("TooManyFunctions") // Deprecated functions will be kept for a while.
@@ -31,6 +19,7 @@ package io.spine.gradle.repo
 import io.spine.gradle.publish.PublishingRepos
 import java.net.URI
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven
 
@@ -94,15 +83,34 @@ fun RepositoryHandler.spineArtifacts(): MavenArtifactRepository = maven {
 }
 
 val RepositoryHandler.intellijReleases: MavenArtifactRepository
-    get() = maven("https://www.jetbrains.com/intellij-repository/releases")
+    get() = maven("https://www.jetbrains.com/intellij-repository/releases") {
+        includeIntelliJPlatformOnly()
+    }
 
-val RepositoryHandler.jetBrainsCacheRedirector: MavenArtifactRepository
-    get() = maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
+val RepositoryHandler.intellijDependencies: MavenArtifactRepository
+    get() = maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies") {
+        includeIntelliJPlatformOnly()
+    }
 
 /**
  * Applies repositories commonly used by Spine Event Engine projects.
  */
 fun RepositoryHandler.standardToSpineSdk() {
+    //
+    // General-purpose, highly available repositories come first. Gradle stops at
+    // the first repository that can serve an artifact, so keeping these ahead of
+    // the special-purpose ones means coordinates shared with them (such as
+    // `org.jetbrains:annotations`) resolve here and never reach a less reliable
+    // JetBrains mirror.
+    //
+    // `io.spine.*` modules are served only by the Spine repositories below, so
+    // they are excluded here. Otherwise Gradle would query Central / the Plugin
+    // Portal for every Spine module first, adding pointless lookups and making
+    // Spine resolution depend on the health of repositories that never host it.
+    //
+    mavenCentral { excludeSpine() }
+    gradlePluginPortal { excludeSpine() }
+
     spineArtifacts()
 
     @Suppress("DEPRECATION") // Still use `CloudRepo` for earlier versions.
@@ -122,15 +130,22 @@ fun RepositoryHandler.standardToSpineSdk() {
             }
         }
 
+    // IntelliJ Platform repositories. `intellijReleases` serves the platform
+    // artifacts (`com.jetbrains.intellij.*`); `intellijDependencies` serves the
+    // repackaged third-party dependencies (`org.jetbrains.intellij.deps.*` and
+    // JetBrains-internal builds). Each is restricted to the coordinates it serves
+    // (see `includeIntelliJPlatformOnly`), so a transient 5xx from one of them
+    // cannot break the resolution of unrelated artifacts.
     intellijReleases
-    jetBrainsCacheRedirector
+    intellijDependencies
 
     maven {
         url = URI(Repos.sonatypeSnapshots)
+        // This repository only ever serves snapshots; restrict it so it is not
+        // queried (and cannot fail the build) for release artifacts.
+        mavenContent { snapshotsOnly() }
     }
 
-    mavenCentral()
-    gradlePluginPortal()
     mavenLocal().includeSpineOnly()
 }
 
@@ -168,5 +183,37 @@ private object Repos {
 private fun MavenArtifactRepository.includeSpineOnly() {
     content {
         includeGroupByRegex("io\\.spine.*")
+    }
+}
+
+/**
+ * Excludes Spine artifact groups from this repository.
+ *
+ * `io.spine.*` modules are published only to the Spine repositories (each scoped
+ * via [includeSpineOnly]). Excluding them from a general-purpose repository keeps
+ * Gradle from querying it — and depending on its health — for coordinates it
+ * never hosts.
+ */
+private fun ArtifactRepository.excludeSpine() {
+    content {
+        excludeGroupByRegex("io\\.spine.*")
+    }
+}
+
+/**
+ * Restricts a JetBrains/IntelliJ Platform repository to the coordinates it
+ * actually serves.
+ *
+ * These hosts periodically answer with HTTP 5xx. Once Gradle sees such an error,
+ * it disables the repository for the rest of the build and fails the resolution
+ * instead of falling back to another repository. Without this filter such a
+ * repository is queried for every artifact, so a single 502 on an unrelated POM
+ * (such as `com.fasterxml.jackson:jackson-parent`) would break the whole build.
+ */
+private fun MavenArtifactRepository.includeIntelliJPlatformOnly() {
+    content {
+        includeGroupByRegex("com\\.jetbrains.*")
+        includeGroupByRegex("org\\.jetbrains.*")
+        includeGroupByRegex("com\\.intellij.*")
     }
 }

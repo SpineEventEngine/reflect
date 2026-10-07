@@ -1,31 +1,20 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.dart.task
 
+import io.spine.gradle.SpineTaskGroup
 import io.spine.gradle.TaskName
 import io.spine.gradle.base.assemble
 import io.spine.gradle.named
@@ -92,11 +81,11 @@ private fun DartTasks.stagePubPublication(): TaskProvider<Copy> =
     register(stagePubPublicationName) {
 
         description = "Prepares the Dart package for Pub publication."
-        group = DartTasks.Group.publish
+        group = SpineTaskGroup.name
 
         dependsOn(assemble)
 
-        // Beside `.dart` sources itself, `pub` package manager conventions require:
+        // Besides `.dart` sources itself, `pub` package manager conventions require:
         // 1. README.md and CHANGELOG.md to build a page at `pub.dev/packages/<your_package>;`.
         // 2. `pubspec` file to fill out details about your package on the right side of your
         //    package’s page.
@@ -117,9 +106,9 @@ private fun DartTasks.stagePubPublication(): TaskProvider<Copy> =
 private val publishToPubName = TaskName.of("publishToPub", Exec::class)
 
 /**
- * Locates `publishToPub` task in this [TaskContainer].
+ * Locates the `publishToPub` task in this [TaskContainer].
  *
- * The task publishes the prepared publication to Pub using `pub publish` command.
+ * The task publishes the prepared publication to Pub using the `pub publish` command.
  */
 val TaskContainer.publishToPub: TaskProvider<Exec>
     get() = named(publishToPubName)
@@ -128,7 +117,7 @@ private fun DartTasks.publishToPub(): TaskProvider<Exec> =
     register(publishToPubName) {
 
         description = "Publishes the prepared publication to Pub."
-        group = DartTasks.Group.publish
+        group = SpineTaskGroup.name
 
         dependsOn(stagePubPublication)
 
@@ -143,7 +132,7 @@ private fun DartTasks.publishToPub(): TaskProvider<Exec> =
 private val activateLocallyName = TaskName.of("activateLocally", Exec::class)
 
 /**
- * Locates `activateLocally` task in this [TaskContainer].
+ * Locates the `activateLocally` task in this [TaskContainer].
  *
  * Makes this package available in the command line as an executable.
  *
@@ -160,7 +149,7 @@ private fun DartTasks.activateLocally(): TaskProvider<Exec> =
     register(activateLocallyName) {
 
         description = "Activates this package locally."
-        group = DartTasks.Group.publish
+        group = SpineTaskGroup.name
 
         dependsOn(stagePubPublication)
 

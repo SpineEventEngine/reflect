@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.dependency.local
@@ -36,15 +24,24 @@ object Validation {
     /**
      * The version of the Validation library artifacts.
      */
-    const val version = "2.0.0-SNAPSHOT.340"
+    const val version = "2.0.0-SNAPSHOT.464"
 
-    const val group = "io.spine.validation"
-    private const val prefix = "spine-validation"
+    const val group = Spine.toolsGroup
+    private const val prefix = "validation"
 
-    const val runtimeModule = "$group:$prefix-java-runtime"
-    const val runtime = "$runtimeModule:$version"
-    const val java = "$group:$prefix-java:$version"
+    const val gradlePluginModule = "$group:$prefix-gradle-plugin"
+    const val gradlePluginLib = "$gradlePluginModule:$version"
 
+    const val runtimeModule = "${Spine.group}:spine-$prefix-jvm-runtime"
+
+    fun runtime(version: String) = "$runtimeModule:$version"
+    val runtime = runtime(version)
+
+    @Deprecated("Use `runtime` instead.", ReplaceWith("runtime"))
+    const val oldRuntime = "io.spine.validation:spine-validation-java-runtime:2.0.0-SNAPSHOT.354"
+
+    const val javaModule = "$group:$prefix-java"
+    const val java = "$javaModule:$version"
     const val javaBundleModule = "$group:$prefix-java-bundle"
 
     /** Obtains the artifact for the `java-bundle` artifact of the given version. */
@@ -52,6 +49,5 @@ object Validation {
 
     val javaBundle = javaBundle(version)
 
-    const val model = "$group:$prefix-model:$version"
-    const val config = "$group:$prefix-configuration:$version"
+    const val context = "$group:$prefix-context:$version"
 }

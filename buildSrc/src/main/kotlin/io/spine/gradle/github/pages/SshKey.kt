@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.github.pages
@@ -29,24 +17,43 @@ package io.spine.gradle.github.pages
 import io.spine.gradle.Cli
 import java.io.File
 import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
 
 /**
- * Registers SSH key for further operations with GitHub Pages.
+ * Registers the SSH key for further operations with GitHub Pages.
+ *
+ * @property rootProjectFolder The folder of the project for which we build the documentation.
+ * @property logger The logger for placing diagnostic messages of this class.
  */
-internal class SshKey(private val rootProjectFolder: File) {
+internal class SshKey(
+    private val rootProjectFolder: File,
+    private val logger: Logger
+) {
+
+    private fun log(message: () -> String) {
+        if (logger.isInfoEnabled) {
+            logger.info("[SshKey] " + message())
+        }
+    }
+
     /**
      * Creates an SSH key with the credentials and registers it by invoking the
      * `register-ssh-key.sh` script.
      */
     fun register() {
+        log { "Registering using ${rootProjectFolder.absolutePath}." }
         val gitHubAccessKey = gitHubKey()
+        log { "Obtained the key file at ${gitHubAccessKey.absolutePath}." }
         val sshConfigFile = sshConfigFile()
+        log { "Located the SSH config file at ${sshConfigFile.absolutePath}." }
         sshConfigFile.appendPublisher(gitHubAccessKey)
+        log { "SSH config file appended." }
 
         execute(
             "${rootProjectFolder.absolutePath}/config/scripts/register-ssh-key.sh",
             gitHubAccessKey.absolutePath
         )
+        log { "The SSH key registered." }
     }
 
     /**
@@ -59,7 +66,7 @@ internal class SshKey(private val rootProjectFolder: File) {
      * publishing.
      *
      * Thus, we configure the SSH agent to use the `deploy_rsa_key` only for specific
-     * references, namely in `github.com-publish`.
+     * references, namely in `github-publish`.
      *
      * @throws GradleException if `deploy_key_rsa` is not found.
      */
@@ -91,9 +98,10 @@ internal class SshKey(private val rootProjectFolder: File) {
         val nl = System.lineSeparator()
         this.appendText(
             nl +
-                    "Host github.com-publish" + nl +
-                    "User git" + nl +
-                    "IdentityFile ${privateKey.absolutePath}" + nl
+                    "Host github-publish" + nl +
+                    "   HostName github.com" + nl +
+                    "   User git" + nl +
+                    "   IdentityFile ${privateKey.absolutePath}" + nl
         )
     }
 

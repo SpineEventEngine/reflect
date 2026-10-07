@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.dependency.boms
@@ -29,6 +17,7 @@ package io.spine.dependency.boms
 import io.gitlab.arturbosch.detekt.getSupportedKotlinVersion
 import io.spine.dependency.DependencyWithBom
 import io.spine.dependency.diagSuffix
+import io.spine.dependency.isDokka
 import io.spine.dependency.kotlinx.Coroutines
 import io.spine.dependency.lib.Kotlin
 import io.spine.dependency.test.JUnit
@@ -39,7 +28,7 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 
 /**
- * The plugin which forces versions of platforms declared in the [Boms] object.
+ * The plugin that forces versions of platforms declared in the [Boms] object.
  *
  * Versions are enforced via the
  * [org.gradle.api.artifacts.dsl.DependencyHandler.enforcedPlatform] call
@@ -56,7 +45,7 @@ import org.gradle.api.artifacts.ConfigurationContainer
  *
  *  In addition to forcing BOM-based dependencies,
  *  the plugin [forces][org.gradle.api.artifacts.ResolutionStrategy.force] the versions
- *  of [Kotlin.StdLib.artifacts] for all configurations because even through Kotlin
+ *  of [Kotlin.StdLib.artifacts] for all configurations because even though Kotlin
  *  artifacts are forced with BOM, the `variants` in the dependencies cannot be
  *  picked by Gradle.
  *
@@ -88,7 +77,7 @@ class BomsPlugin : Plugin<Project>  {
                 applyBoms(project, Boms.core + Boms.testing)
             }
 
-            matching { !supportsBom(it.name) }.all {
+            matching { !supportsBom(it.name) && !it.isDokka }.all {
                 resolutionStrategy.eachDependency {
                     if (requested.group == Kotlin.group) {
                         val kotlinVersion = Kotlin.runtimeVersion
@@ -170,7 +159,7 @@ private fun supportsBom(name: String) =
 private fun Project.forceArtifacts() =
     configurations.all {
         resolutionStrategy {
-            if (!isDetekt) {
+            if (!isDetekt && !isDokka) {
                 val rs = this@resolutionStrategy
                 val project = this@forceArtifacts
                 val cfg = this@all

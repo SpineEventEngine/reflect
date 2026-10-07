@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.dependency.test
@@ -29,11 +17,11 @@ package io.spine.dependency.test
 import io.spine.dependency.Dependency
 import io.spine.dependency.DependencyWithBom
 
-// https://junit.org/junit5/
+// https://junit.org/
 @Suppress("unused", "ConstPropertyName")
 object JUnit : DependencyWithBom() {
 
-    override val version = "5.13.2"
+    override val version = "6.1.3"
     override val group: String = "org.junit"
 
     /**
@@ -52,7 +40,7 @@ object JUnit : DependencyWithBom() {
      */
     override val bom = "$group:junit-bom:$version"
 
-    private const val legacyVersion = "4.13.1"
+    private const val legacyVersion = "4.13.2"
 
     // https://github.com/apiguardian-team/apiguardian
     private const val apiGuardianVersion = "1.1.2"
@@ -63,19 +51,6 @@ object JUnit : DependencyWithBom() {
 
     const val legacy = "junit:junit:$legacyVersion"
 
-    @Deprecated("Use JUnit.Jupiter.api instead", ReplaceWith("JUnit.Jupiter.api"))
-    val api = listOf(
-        "org.apiguardian:apiguardian-api:$apiGuardianVersion",
-        "org.junit.jupiter:junit-jupiter-api:$version",
-        "org.junit.jupiter:junit-jupiter-params:$version"
-    )
-
-    @Deprecated("Use JUnit.Jupiter.engine instead", ReplaceWith("JUnit.Jupiter.engine"))
-    val runner = "org.junit.jupiter:junit-jupiter-engine:$version"
-
-    @Deprecated("Use JUnit.Jupiter.params instead", ReplaceWith("JUnit.Jupiter.params"))
-    val params = "org.junit.jupiter:junit-jupiter-params:$version"
-
     object Jupiter : Dependency() {
         override val version = JUnit.version
         override val group = "org.junit.jupiter"
@@ -85,9 +60,6 @@ object JUnit : DependencyWithBom() {
         val api = "$group:$infix-api"
         val params = "$group:$infix-params"
         val engine = "$group:$infix-engine"
-
-        @Deprecated("Please use `[Jupiter.run { artifacts[api] }` instead.")
-        val apiArtifact = "$api:$version"
 
         override val modules = listOf(api, params, engine)
     }
@@ -104,8 +76,13 @@ object JUnit : DependencyWithBom() {
          *
          * So when we use JUnit as a platform, this property should be picked up
          * for the dependencies automatically.
+         *
+         * Since JUnit 6 the platform shares the version line of JUnit itself,
+         * so this property mirrors [JUnit.version] rather than repeating it.
+         * Under JUnit 5 the two differed — the platform was `1.x` while
+         * Jupiter was `5.x`.
          */
-        override val version: String = "1.13.2"
+        override val version: String = JUnit.version
         override val group = "org.junit.platform"
 
         private const val infix = "junit-platform"

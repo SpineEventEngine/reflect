@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.report.pom
@@ -30,9 +18,7 @@ import groovy.xml.MarkupBuilder
 import java.io.StringWriter
 import kotlin.reflect.KProperty
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.PropertyDelegate
 import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withGroovyBuilder
 
 /**
@@ -74,30 +60,20 @@ internal constructor(
  *
  * The required information is first retrieved from the project.
  * And if a property is missing from the `project`, it is taken from the `extra` extension
- * of project's root project.
+ * of the project's root project.
  */
 internal fun Project.metadata(): ProjectMetadata {
-    val groupId: String by nonEmptyValue(group)
-    val artifactId: String by nonEmptyValue(name)
-    val version: String by project.nonEmptyValue(this.version)
+    val groupId = nonEmptyValue(group, "groupId")
+    val artifactId = nonEmptyValue(name, "artifactId")
+    val version = nonEmptyValue(this.version, "version")
     return ProjectMetadata(project, groupId, artifactId, version)
 }
 
-private fun Project.nonEmptyValue(prop: Any): NonEmptyValue {
-    return NonEmptyValue(prop.toString(), this)
-}
-
-private class NonEmptyValue(
-    private val defaultValue: String,
-    private val project: Project
-) : PropertyDelegate {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T> getValue(receiver: Any?, property: KProperty<*>): T {
-        if (defaultValue.isNotEmpty()) {
-            return defaultValue as T
-        }
-        val result = project.rootProject.extra[property.name]
-        return result as T
-    }
-}
+/**
+ * Obtains the string form of the given [value].
+ *
+ * If that form is empty, falls back to the property named [key] in the `extra`
+ * properties of the root project, failing if it is absent or not a `String`.
+ */
+private fun Project.nonEmptyValue(value: Any, key: String): String =
+    value.toString().ifEmpty { rootProject.extra[key] as String }

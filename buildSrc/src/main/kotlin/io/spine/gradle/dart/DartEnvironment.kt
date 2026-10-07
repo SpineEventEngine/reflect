@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.dart
@@ -54,7 +42,7 @@ interface DartEnvironment {
     val projectName: String
 
     /**
-     * A directory which all artifacts are generated into.
+     * A directory that all artifacts are generated into.
      *
      * Default value: "$projectDir/build".
      */
@@ -73,7 +61,7 @@ interface DartEnvironment {
             .resolve(projectName)
 
     /**
-     * A directory which contains integration test Dart sources.
+     * A directory that contains integration test Dart sources.
      *
      * Default value: "$projectDir/integration-test".
      */
@@ -116,7 +104,7 @@ interface DartEnvironment {
      * Before the [packageConfig], pub used to create this [packageIndex] file in the root
      * directory.
      *
-     * As for Dart 2.14,  `pub` still updates the deprecated file for backwards compatibility.
+     * As for Dart 2.14, `pub` still updates the deprecated file for backwards compatibility.
      *
      * Default value: "$projectDir/.packages".
      */
@@ -138,8 +126,8 @@ interface DartEnvironment {
  * Allows overriding [DartEnvironment]'s defaults.
  *
  * Please note, not all properties of the environment can be overridden. Properties that describe
- * `pub` tool's input/output files can NOT be overridden because `pub` itself doesn't allow to
- * specify them for its execution.
+ * the `pub` tool's input/output files can NOT be overridden because `pub` itself doesn't allow
+ * specifying them for its execution.
  *
  * The next properties could not be overridden:
  *

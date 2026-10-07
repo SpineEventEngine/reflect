@@ -1,27 +1,15 @@
 /*
- * Copyright 2025, TeamDev. All rights reserved.
+ * Copyright 2026 CodeMatters, Lda.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Redistribution and use in source and/or binary forms, with or without
- * modification, must retain the above copyright notice and the following
- * disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
 package io.spine.gradle.fs
@@ -41,11 +29,16 @@ import java.nio.file.WatchService
  *
  * After the first usage, the instances of this type delegate all calls to the internally
  * created instance of [Path] created with [createTempDirectory].
+ *
+ * The directory is created under the [shared base directory][SpineTempDir], which is removed
+ * when the JVM — the Gradle daemon — shuts down. Build tasks delete their own directories
+ * eagerly as the primary cleanup; this shutdown removal is a safety net, so a directory does
+ * not outlive the daemon even when a build fails before its eager cleanup runs.
  */
 @Suppress("TooManyFunctions")
 class LazyTempPath(private val prefix: String) : Path {
 
-    private val delegate: Path by lazy { createTempDirectory(prefix) }
+    private val delegate: Path by lazy { createTempDirectory(SpineTempDir.path, prefix) }
 
     override fun compareTo(other: Path): Int = delegate.compareTo(other)
 
@@ -57,7 +50,7 @@ class LazyTempPath(private val prefix: String) : Path {
         vararg modifiers: WatchEvent.Modifier?
     ): WatchKey = delegate.register(watcher, events, *modifiers)
 
-    override fun register(watcher: WatchService, vararg events: WatchEvent.Kind<*>?): WatchKey =
+    override fun register(watcher: WatchService, vararg events: WatchEvent.Kind<*>): WatchKey =
         delegate.register(watcher, *events)
 
     override fun getFileSystem(): FileSystem = delegate.fileSystem
@@ -101,7 +94,7 @@ class LazyTempPath(private val prefix: String) : Path {
 
     override fun toAbsolutePath(): Path = delegate.toAbsolutePath()
 
-    override fun toRealPath(vararg options: LinkOption?): Path = delegate.toRealPath(*options)
+    override fun toRealPath(vararg options: LinkOption): Path = delegate.toRealPath(*options)
 
     override fun toFile(): File = delegate.toFile()
 

@@ -15,6 +15,7 @@
 @file:Suppress("RemoveRedundantQualifierName") // Cannot use imports in some places.
 
 import io.spine.dependency.build.JSpecify
+import io.spine.dependency.kotlinx.Coroutines
 import io.spine.dependency.lib.Kotlin
 import io.spine.dependency.local.Logging
 import io.spine.dependency.local.TestLib
@@ -59,9 +60,6 @@ spinePublishing {
             gitHub("reflect")
         )
     }
-    dokkaJar {
-        java = true
-    }
 }
 
 dependencies {
@@ -72,7 +70,12 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force(Logging.lib, Logging.libJvm)
+        force(
+            Logging.lib,
+            Logging.libJvm,
+            // Requested at an older version by `TestLib.lib`.
+            Coroutines.bom,
+        )
     }
 }
 
@@ -88,9 +91,13 @@ tasks {
      *
      * JUnit loads test classes in advance to support its features.
      * For example, test-includes and excludes functionality.
+     *
+     * The class files are excluded from the candidates for test discovery.
+     * A test filter (`filter.excludeTestsMatching`) is not enough: it still lets
+     * the discovery load an excluded class, only to skip running it.
      */
     withType<Test>().configureEach {
-        filter.excludeTestsMatching("io.spine.reflect.given.unloaded*")
+        exclude("io/spine/reflect/given/unloaded/**")
     }
 }
 

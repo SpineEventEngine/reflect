@@ -183,10 +183,9 @@ public final class PackageInfo implements Comparable<PackageInfo> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PackageInfo)) {
+        if (!(o instanceof PackageInfo node)) {
             return false;
         }
-        var node = (PackageInfo) o;
         return Objects.equals(value, node.value);
     }
 

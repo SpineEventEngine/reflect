@@ -22,6 +22,7 @@ import com.google.common.graph.EndpointPair;
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.ImmutableGraph;
+import com.google.common.graph.Network;
 import com.google.errorprone.annotations.Immutable;
 
 import java.util.ArrayDeque;
@@ -223,6 +224,11 @@ public final class PackageGraph implements Graph<PackageInfo> {
     @Override
     public boolean hasEdgeConnecting(EndpointPair<PackageInfo> endpoints) {
         return impl.hasEdgeConnecting(endpoints);
+    }
+
+    @Override
+    public Network<PackageInfo, EndpointPair<PackageInfo>> asNetwork() {
+        return impl.asNetwork();
     }
 
     private static void checkNotNullOrEmpty(String packagePrefix) {

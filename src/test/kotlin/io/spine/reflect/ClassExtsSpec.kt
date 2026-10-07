@@ -24,7 +24,7 @@ internal class ClassExtsSpec {
     @Test
     fun `obtain generic type argument`() {
         Leaf::class.java.argumentIn<Base<*, *>>(0) shouldBe String::class.java
-        Leaf::class.java.argumentIn<Base<*, *>>(1) shouldBe java.lang.Float::class.java
+        Leaf::class.java.argumentIn<Base<*, *>>(1) shouldBe Float::class.javaObjectType
     }
 }
 
